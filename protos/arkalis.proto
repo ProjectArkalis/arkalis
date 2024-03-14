@@ -1,0 +1,89 @@
+syntax = "proto3";
+package arkalis;
+
+message CreateTokenRequest {
+    string display_name = 1;
+}
+
+message CreateTokenResponse {
+    string token = 1;
+}
+
+message GetUserInfoRequest {}
+
+message GetUserInfoResponse {
+    string id = 1;
+    string display_name = 2;
+    string role = 3;
+    optional string mal_profile = 4;
+    optional string anilist_profile = 5;
+}
+
+enum TitleType {
+    TITLE_TYPE_ROMAJI = 0;
+    TITLE_TYPE_ENGLISH = 1;
+    TITLE_TYPE_PORTUGUESE = 2;
+    TITLE_TYPE_NATIVE = 3;
+}
+
+message Title {
+    string name = 1;
+    TitleType title_type = 2;
+    bool is_main = 3;
+}
+
+enum AnimeList {
+    ANIME_LIST_MY_ANIME_LIST = 0;
+    ANIME_LIST_ANILIST = 1;
+}
+
+message AnimeInAnimeList {
+    AnimeList anime_list = 1;
+    string id_in_list = 2;
+}
+
+message CreateAnimeRequest {
+    repeated Title titles = 1;
+    string synopsis = 2;
+    optional string thumbnail_id = 3;
+    optional string banner_id = 4;
+    bool is_hidden = 5;
+    bool is_nsfw = 6;
+    uint64 genre = 7;
+    int64 release_date = 8;
+    repeated AnimeInAnimeList anime_in_lists = 9;
+}
+
+message CreateAnimeResponse {
+    uint32 id = 1;
+}
+
+message Anime {
+    uint32 id = 1;
+    repeated Title titles = 2;
+    string synopsis = 3;
+    optional string thumbnail_id = 4;
+    optional string banner_id = 5;
+    bool is_hidden = 6;
+    bool is_nsfw = 7;
+    string created_by = 8;
+    int64 created_at = 9;
+    uint64 genre = 10;
+    int64 release_date = 11;
+    repeated AnimeInAnimeList anime_in_lists = 12;
+}
+
+message GetAnimeByIdResponse {
+    Anime anime = 1;
+}
+
+message GetAnimeByIdRequest {
+    uint32 id = 1;
+}
+
+service ArkalisCoreService {
+    rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
+    rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse);
+    rpc CreateAnime(CreateAnimeRequest) returns (CreateAnimeResponse);
+    rpc GetAnimeById(GetAnimeByIdRequest) returns (GetAnimeByIdResponse);
+}
