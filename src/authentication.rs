@@ -34,9 +34,6 @@ impl<T> Authentication for Request<T> {
 
     fn is_authenticated(&self, config: &Config) -> bool {
         let user = self.get_user(config);
-        match user {
-            Ok(_) => true,
-            Err(_) => false,
-        }
+        user.is_ok()
     }
 }
