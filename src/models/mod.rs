@@ -1,6 +1,7 @@
 pub mod anime;
 mod anime_in_anime_list;
 mod anime_list;
+pub mod arguments;
 pub mod config;
 pub mod error;
 mod genre;

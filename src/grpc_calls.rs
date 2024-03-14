@@ -1,3 +1,4 @@
+use clap::Parser;
 use std::sync::Arc;
 use tonic::{Request, Response, Status};
 
@@ -7,6 +8,7 @@ use crate::arkalis_service::{
     GetAnimeByIdRequest, GetAnimeByIdResponse, GetUserInfoRequest, GetUserInfoResponse,
 };
 use crate::authentication::Authentication;
+use crate::models::arguments::Cli;
 use crate::models::config::Config;
 use crate::repositories::DatabaseConnection;
 use crate::services::anime_service::AnimeService;
@@ -20,7 +22,8 @@ pub struct ArkalisGrpcServerServices {
 
 impl ArkalisGrpcServerServices {
     pub async fn new() -> Self {
-        let config = Arc::new(Config::new());
+        let args = Arc::new(Cli::parse());
+        let config = Arc::new(Config::new(&args));
         let database_connection = DatabaseConnection::new(&config).await;
         let database_connection = Arc::new(database_connection);
 
