@@ -4,8 +4,9 @@ use tonic::{Request, Response, Status};
 
 use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreService;
 use crate::arkalis_service::{
-    CreateAnimeRequest, CreateAnimeResponse, CreateTokenRequest, CreateTokenResponse,
-    GetAnimeByIdRequest, GetAnimeByIdResponse, GetUserInfoRequest, GetUserInfoResponse,
+    CreateAdminRequest, CreateAdminResponse, CreateAnimeRequest, CreateAnimeResponse,
+    CreateTokenRequest, CreateTokenResponse, GetAnimeByIdRequest, GetAnimeByIdResponse,
+    GetUserInfoRequest, GetUserInfoResponse,
 };
 use crate::authentication::Authentication;
 use crate::models::arguments::Cli;
@@ -49,6 +50,17 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         let response = self
             .user_service
             .generate_token(request.into_inner())
+            .await?;
+        Ok(Response::new(response))
+    }
+
+    async fn create_admin(
+        &self,
+        request: Request<CreateAdminRequest>,
+    ) -> Result<Response<CreateAdminResponse>, Status> {
+        let response = self
+            .user_service
+            .create_adm_token(request.into_inner())
             .await?;
         Ok(Response::new(response))
     }

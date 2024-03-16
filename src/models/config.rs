@@ -11,6 +11,7 @@ use super::arguments::Cli;
 pub struct Config {
     pub jwt_secret: String,
     pub database_url: String,
+    pub admin_master_key: String,
 }
 
 impl Config {

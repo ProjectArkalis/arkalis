@@ -77,6 +77,20 @@ impl User {
         Ok(user)
     }
 
+    pub fn create_adm_user(
+        config: &Config,
+        display_name: String,
+        admin_master_key: &str,
+    ) -> Result<Self, ApplicationError> {
+        if config.admin_master_key != admin_master_key {
+            return Err(ApplicationError::Unauthorized);
+        }
+        let mut user = User::new(display_name);
+        user.role = Roles::Admin;
+
+        Ok(user)
+    }
+
     fn get_jwt_key(config: &Config) -> Result<CoreWrapper<HmacCore<Sha256>>, ApplicationError> {
         let jwt = Hmac::<Sha256>::new_from_slice(config.jwt_secret.as_bytes()).map_err(|_| {
             ApplicationError::UnknownError(anyhow::Error::msg("Could not generate HMAC"))

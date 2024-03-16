@@ -81,8 +81,18 @@ message GetAnimeByIdRequest {
     uint32 id = 1;
 }
 
+message CreateAdminRequest {
+    string admin_master_key = 1;
+    string display_name = 2;
+}
+
+message CreateAdminResponse {
+    string token = 1;
+}
+
 service ArkalisCoreService {
     rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
+    rpc CreateAdmin(CreateAdminRequest) returns (CreateAdminResponse);
     rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse);
     rpc CreateAnime(CreateAnimeRequest) returns (CreateAnimeResponse);
     rpc GetAnimeById(GetAnimeByIdRequest) returns (GetAnimeByIdResponse);
