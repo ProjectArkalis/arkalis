@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use crate::arkalis_service::{
     CreateAnimeRequest, CreateAnimeResponse, GetAnimeByIdRequest, GetAnimeByIdResponse,
+    SearchAnimeRequest, SearchAnimeResponse,
 };
 use crate::models::anime::Anime;
 use crate::models::error::ApplicationError;
@@ -33,5 +34,15 @@ impl AnimeService {
             .await?
             .into();
         Ok(GetAnimeByIdResponse { anime: Some(anime) })
+    }
+
+    pub async fn search_anime(
+        &self,
+        filters: SearchAnimeRequest,
+    ) -> Result<SearchAnimeResponse, ApplicationError> {
+        let animes = anime_repository::anime_search(&self.database_connection, filters).await?;
+        Ok(SearchAnimeResponse {
+            animes: animes.into_iter().map(|anime| anime.into()).collect(),
+        })
     }
 }

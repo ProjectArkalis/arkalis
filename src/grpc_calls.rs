@@ -6,7 +6,7 @@ use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreService;
 use crate::arkalis_service::{
     CreateAdminRequest, CreateAdminResponse, CreateAnimeRequest, CreateAnimeResponse,
     CreateTokenRequest, CreateTokenResponse, GetAnimeByIdRequest, GetAnimeByIdResponse,
-    GetUserInfoRequest, GetUserInfoResponse,
+    GetUserInfoRequest, GetUserInfoResponse, SearchAnimeRequest, SearchAnimeResponse,
 };
 use crate::authentication::Authentication;
 use crate::models::arguments::Cli;
@@ -91,5 +91,16 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
     ) -> Result<Response<GetAnimeByIdResponse>, Status> {
         let anime = self.anime_service.get_anime(request.into_inner()).await?;
         Ok(Response::new(anime))
+    }
+
+    async fn search_anime(
+        &self,
+        request: Request<SearchAnimeRequest>,
+    ) -> Result<Response<SearchAnimeResponse>, Status> {
+        let animes = self
+            .anime_service
+            .search_anime(request.into_inner())
+            .await?;
+        Ok(Response::new(animes))
     }
 }
