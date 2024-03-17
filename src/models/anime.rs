@@ -4,7 +4,7 @@ use sqlx::mysql::MySqlRow;
 use sqlx::{Error, FromRow, Row};
 use validator::{Validate, ValidationError};
 
-use crate::arkalis_service::CreateAnimeRequest;
+use crate::arkalis_service::{CreateAnimeRequest, EditAnimeRequest};
 use crate::models::anime_in_anime_list::AnimeInAnimeList;
 use crate::models::error::ApplicationError;
 use crate::models::genre::Genre;
@@ -82,6 +82,44 @@ impl Anime {
         let json = serde_json::to_string(&self.anime_in_lists)
             .map_err(|e| ApplicationError::UnknownError(e.into()))?;
         Ok(json)
+    }
+
+    pub fn update(
+        mut self,
+        update_data: EditAnimeRequest,
+        user: &User,
+    ) -> Result<Self, ApplicationError> {
+        if !user.has_uploader_or_adm_role() {
+            return Err(ApplicationError::Unauthorized);
+        }
+
+        if update_data.id
+            != self
+                .id
+                .ok_or(ApplicationError::UnknownError(anyhow::Error::msg(
+                    "entity id is null",
+                )))?
+        {
+            return Err(ApplicationError::UnknownError(anyhow::Error::msg(
+                "entity id does not match the request",
+            )));
+        }
+
+        self.titles = Title::from_grpc_arr(update_data.titles)?;
+        self.synopsis = update_data.synopsis;
+        self.thumbnail_id = update_data.thumbnail_id;
+        self.banner_id = update_data.banner_id;
+        self.genre = Genre::from_bits(update_data.genre).ok_or(ApplicationError::InvalidData(
+            anyhow::Error::msg("genre is invalid"),
+        ))?;
+        self.release_date = DateTime::from_timestamp(update_data.release_date, 0).ok_or(
+            ApplicationError::InvalidData(anyhow::Error::msg(
+                "release_date is invalid unix timestamp",
+            )),
+        )?;
+        self.anime_in_lists = AnimeInAnimeList::from_grpc_arr(update_data.anime_in_lists)?;
+
+        Ok(self)
     }
 
     fn titles_from_json(json: &str) -> Result<Vec<Title>, ApplicationError> {

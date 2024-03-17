@@ -90,6 +90,10 @@ impl User {
 
         Ok(user)
     }
+    
+    pub fn has_uploader_or_adm_role(&self) -> bool {
+        self.role == Roles::Uploader || self.role == Roles::Admin
+    }
 
     fn get_jwt_key(config: &Config) -> Result<CoreWrapper<HmacCore<Sha256>>, ApplicationError> {
         let jwt = Hmac::<Sha256>::new_from_slice(config.jwt_secret.as_bytes()).map_err(|_| {

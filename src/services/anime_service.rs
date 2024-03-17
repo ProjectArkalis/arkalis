@@ -1,8 +1,9 @@
 use std::sync::Arc;
+use validator::Validate;
 
 use crate::arkalis_service::{
-    CreateAnimeRequest, CreateAnimeResponse, GetAnimeByIdRequest, GetAnimeByIdResponse,
-    SearchAnimeRequest, SearchAnimeResponse,
+    CreateAnimeRequest, CreateAnimeResponse, EditAnimeRequest, EditAnimeResponse,
+    GetAnimeByIdRequest, GetAnimeByIdResponse, SearchAnimeRequest, SearchAnimeResponse,
 };
 use crate::models::anime::Anime;
 use crate::models::error::ApplicationError;
@@ -44,5 +45,18 @@ impl AnimeService {
         Ok(SearchAnimeResponse {
             animes: animes.into_iter().map(|anime| anime.into()).collect(),
         })
+    }
+
+    pub async fn update_anime(
+        &self,
+        anime_update: EditAnimeRequest,
+        user: &User,
+    ) -> Result<EditAnimeResponse, ApplicationError> {
+        let anime =
+            anime_repository::anime_get_by_id(&self.database_connection, anime_update.id).await?;
+        let anime = anime.update(anime_update, user)?;
+        anime.validate()?;
+        anime_repository::anime_update(&self.database_connection, anime).await?;
+        Ok(EditAnimeResponse{})
     }
 }

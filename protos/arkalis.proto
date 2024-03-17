@@ -103,6 +103,19 @@ message SearchAnimeResponse {
     repeated Anime animes = 1;
 }
 
+message EditAnimeRequest {
+    uint32 id = 1;
+    repeated Title titles = 2;
+    string synopsis = 3;
+    optional string thumbnail_id = 4;
+    optional string banner_id = 5;
+    uint64 genre = 6;
+    int64 release_date = 7;
+    repeated AnimeInAnimeList anime_in_lists = 8;
+}
+
+message EditAnimeResponse {}
+
 service ArkalisCoreService {
     rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
     rpc CreateAdmin(CreateAdminRequest) returns (CreateAdminResponse);
@@ -110,4 +123,5 @@ service ArkalisCoreService {
     rpc CreateAnime(CreateAnimeRequest) returns (CreateAnimeResponse);
     rpc GetAnimeById(GetAnimeByIdRequest) returns (GetAnimeByIdResponse);
     rpc SearchAnime(SearchAnimeRequest) returns (SearchAnimeResponse);
+    rpc EditAnime(EditAnimeRequest) returns (EditAnimeResponse);
 }

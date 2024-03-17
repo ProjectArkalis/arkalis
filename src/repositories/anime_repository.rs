@@ -191,6 +191,26 @@ pub async fn anime_search(
     Ok(result)
 }
 
+pub async fn anime_update(conn: &DatabaseConnection, anime: Anime) -> Result<(), ApplicationError> {
+    let titles = anime.get_titles_json()?;
+    let anime_in_list = anime.get_anime_in_anime_list_json()?;
+    
+    sqlx::query("update animes set titles = ?, synopsis = ?, thumbnail_id = ?, banner_id = ?, genre = ?, release_date = ?, anime_in_lists = ? where id = ?")
+        .bind(titles)
+        .bind(anime.synopsis)
+        .bind(anime.thumbnail_id)
+        .bind(anime.banner_id)
+        .bind(anime.genre.bits())
+        .bind(anime.release_date)
+        .bind(anime_in_list)
+        .bind(anime.id)
+        .execute(&conn.connection)
+        .await
+        .map_err(|e| ApplicationError::UnknownError(e.into()))?;
+    
+    Ok(())
+}
+
 fn complete_like(col: AnimeQueryTable, value: String) -> SimpleExpr {
     Expr::col(col).like(format!("%{}%", value))
 }
