@@ -57,6 +57,6 @@ impl AnimeService {
         let anime = anime.update(anime_update, user)?;
         anime.validate()?;
         anime_repository::anime_update(&self.database_connection, anime).await?;
-        Ok(EditAnimeResponse{})
+        Ok(EditAnimeResponse {})
     }
 }

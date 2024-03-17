@@ -63,8 +63,8 @@ impl User {
             .map_err(|_| ApplicationError::Unauthorized)?;
         let claims = token.claims();
 
-        let mal_profile = claims.get("mal_profile").map(|x| x.clone());
-        let anilist_profile = claims.get("anilist_profile").map(|x| x.clone());
+        let mal_profile = claims.get("mal_profile").cloned();
+        let anilist_profile = claims.get("anilist_profile").cloned();
 
         let user = Self {
             id: claims["id"].clone(),
@@ -90,7 +90,7 @@ impl User {
 
         Ok(user)
     }
-    
+
     pub fn has_uploader_or_adm_role(&self) -> bool {
         self.role == Roles::Uploader || self.role == Roles::Admin
     }

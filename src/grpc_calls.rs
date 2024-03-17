@@ -3,7 +3,12 @@ use std::sync::Arc;
 use tonic::{Request, Response, Status};
 
 use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreService;
-use crate::arkalis_service::{CreateAdminRequest, CreateAdminResponse, CreateAnimeRequest, CreateAnimeResponse, CreateTokenRequest, CreateTokenResponse, EditAnimeRequest, EditAnimeResponse, GetAnimeByIdRequest, GetAnimeByIdResponse, GetUserInfoRequest, GetUserInfoResponse, SearchAnimeRequest, SearchAnimeResponse};
+use crate::arkalis_service::{
+    CreateAdminRequest, CreateAdminResponse, CreateAnimeRequest, CreateAnimeResponse,
+    CreateTokenRequest, CreateTokenResponse, EditAnimeRequest, EditAnimeResponse,
+    GetAnimeByIdRequest, GetAnimeByIdResponse, GetUserInfoRequest, GetUserInfoResponse,
+    SearchAnimeRequest, SearchAnimeResponse,
+};
 use crate::authentication::Authentication;
 use crate::models::arguments::Cli;
 use crate::models::config::Config;
@@ -100,9 +105,15 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         Ok(Response::new(animes))
     }
 
-    async fn edit_anime(&self, request: Request<EditAnimeRequest>) -> Result<Response<EditAnimeResponse>, Status> {
+    async fn edit_anime(
+        &self,
+        request: Request<EditAnimeRequest>,
+    ) -> Result<Response<EditAnimeResponse>, Status> {
         let user = request.get_user(&self.config)?;
-        let response = self.anime_service.update_anime(request.into_inner(), &user).await?;
+        let response = self
+            .anime_service
+            .update_anime(request.into_inner(), &user)
+            .await?;
         Ok(Response::new(response))
     }
 }
