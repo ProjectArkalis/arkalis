@@ -1,10 +1,10 @@
-use sqlx::FromRow;
+use crate::arkalis_service;
 use crate::arkalis_service::AddSeasonRequest;
 use crate::models::error::ApplicationError;
 use crate::models::roles::Roles;
 use crate::models::user::User;
+use sqlx::FromRow;
 use validator::Validate;
-use crate::arkalis_service;
 
 #[derive(Validate, FromRow)]
 pub struct Season {

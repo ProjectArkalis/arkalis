@@ -39,12 +39,15 @@ pub async fn season_get_last_sequence(
         .map_err(|e| ApplicationError::UnknownError(e.into()))
 }
 
-pub async fn season_get_by_anime(conn: &DatabaseConnection, anime_id: u32) -> Result<Vec<Season>, ApplicationError> {
+pub async fn season_get_by_anime(
+    conn: &DatabaseConnection,
+    anime_id: u32,
+) -> Result<Vec<Season>, ApplicationError> {
     let result = sqlx::query_as("select * from seasons where anime_id = ?")
         .bind(anime_id)
         .fetch_all(&conn.connection)
         .await
         .map_err(|e| ApplicationError::UnknownError(e.into()))?;
-    
+
     Ok(result)
 }
