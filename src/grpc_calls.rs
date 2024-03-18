@@ -12,6 +12,7 @@ use crate::arkalis_service::{
 use crate::authentication::Authentication;
 use crate::models::arguments::Cli;
 use crate::models::config::Config;
+use crate::models::error::ApplicationError;
 use crate::repositories::DatabaseConnection;
 use crate::services::anime_service::AnimeService;
 use crate::services::user_service::UserService;
@@ -20,6 +21,7 @@ pub struct ArkalisGrpcServerServices {
     user_service: UserService,
     config: Arc<Config>,
     anime_service: AnimeService,
+    database_connection: Arc<DatabaseConnection>
 }
 
 impl ArkalisGrpcServerServices {
@@ -36,9 +38,14 @@ impl ArkalisGrpcServerServices {
                 database_connection: database_connection.clone(),
             },
             anime_service: AnimeService {
-                database_connection,
+                database_connection: database_connection.clone(),
             },
+            database_connection
         }
+    }
+
+    pub async fn startup_routine(&self) -> Result<(), ApplicationError> {
+        self.database_connection.migrate_database().await
     }
 }
 
