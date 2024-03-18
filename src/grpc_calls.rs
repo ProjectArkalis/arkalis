@@ -7,8 +7,9 @@ use crate::arkalis_service::{
     AddSeasonRequest, AddSeasonResponse, CreateAdminRequest, CreateAdminResponse,
     CreateAnimeRequest, CreateAnimeResponse, CreateTokenRequest, CreateTokenResponse,
     EditAnimeRequest, EditAnimeResponse, GetAnimeByIdRequest, GetAnimeByIdResponse,
-    GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse, GetUserInfoRequest,
-    GetUserInfoResponse, SearchAnimeRequest, SearchAnimeResponse,
+    GetAnimeSeasonsRequest, GetAnimeSeasonsResponse, GetLastSeasonSequenceRequest,
+    GetLastSeasonSequenceResponse, GetUserInfoRequest, GetUserInfoResponse, SearchAnimeRequest,
+    SearchAnimeResponse,
 };
 use crate::authentication::Authentication;
 use crate::models::arguments::Cli;
@@ -149,6 +150,17 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         let response = self
             .season_service
             .get_last_season_sequence(request.into_inner())
+            .await?;
+        Ok(Response::new(response))
+    }
+
+    async fn get_anime_seasons(
+        &self,
+        request: Request<GetAnimeSeasonsRequest>,
+    ) -> Result<Response<GetAnimeSeasonsResponse>, Status> {
+        let response = self
+            .season_service
+            .get_by_anime(request.into_inner())
             .await?;
         Ok(Response::new(response))
     }

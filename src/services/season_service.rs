@@ -1,6 +1,6 @@
 use crate::arkalis_service::{
-    AddSeasonRequest, AddSeasonResponse, GetLastSeasonSequenceRequest,
-    GetLastSeasonSequenceResponse,
+    AddSeasonRequest, AddSeasonResponse, GetAnimeSeasonsRequest, GetAnimeSeasonsResponse,
+    GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse,
 };
 use crate::models::error::ApplicationError;
 use crate::models::season::Season;
@@ -31,15 +31,25 @@ impl SeasonService {
         let last_sequence =
             season_repository::season_get_last_sequence(&self.database_connection, filter.anime_id)
                 .await;
-        
+
         if let Err(ApplicationError::NotFound) = last_sequence {
-            return Ok(GetLastSeasonSequenceResponse {
-                last_sequence: 0,
-            });
+            return Ok(GetLastSeasonSequenceResponse { last_sequence: 0 });
         }
-        
+
         Ok(GetLastSeasonSequenceResponse {
             last_sequence: last_sequence? as u32,
+        })
+    }
+
+    pub async fn get_by_anime(
+        &self,
+        anime: GetAnimeSeasonsRequest,
+    ) -> Result<GetAnimeSeasonsResponse, ApplicationError> {
+        let seasons =
+            season_repository::season_get_by_anime(&self.database_connection, anime.anime_id)
+                .await?;
+        Ok(GetAnimeSeasonsResponse {
+            seasons: seasons.into_iter().map(|s| s.into()).collect(),
         })
     }
 }
