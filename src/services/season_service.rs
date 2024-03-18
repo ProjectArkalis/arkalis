@@ -30,9 +30,16 @@ impl SeasonService {
     ) -> Result<GetLastSeasonSequenceResponse, ApplicationError> {
         let last_sequence =
             season_repository::season_get_last_sequence(&self.database_connection, filter.anime_id)
-                .await?;
+                .await;
+        
+        if let Err(ApplicationError::NotFound) = last_sequence {
+            return Ok(GetLastSeasonSequenceResponse {
+                last_sequence: 0,
+            });
+        }
+        
         Ok(GetLastSeasonSequenceResponse {
-            last_sequence: last_sequence as u32,
+            last_sequence: last_sequence? as u32,
         })
     }
 }
