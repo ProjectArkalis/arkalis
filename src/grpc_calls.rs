@@ -4,10 +4,10 @@ use tonic::{Request, Response, Status};
 
 use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreService;
 use crate::arkalis_service::{
-    CreateAdminRequest, CreateAdminResponse, CreateAnimeRequest, CreateAnimeResponse,
-    CreateTokenRequest, CreateTokenResponse, EditAnimeRequest, EditAnimeResponse,
-    GetAnimeByIdRequest, GetAnimeByIdResponse, GetUserInfoRequest, GetUserInfoResponse,
-    SearchAnimeRequest, SearchAnimeResponse,
+    AddSeasonRequest, AddSeasonResponse, CreateAdminRequest, CreateAdminResponse,
+    CreateAnimeRequest, CreateAnimeResponse, CreateTokenRequest, CreateTokenResponse,
+    EditAnimeRequest, EditAnimeResponse, GetAnimeByIdRequest, GetAnimeByIdResponse,
+    GetUserInfoRequest, GetUserInfoResponse, SearchAnimeRequest, SearchAnimeResponse,
 };
 use crate::authentication::Authentication;
 use crate::models::arguments::Cli;
@@ -15,13 +15,15 @@ use crate::models::config::Config;
 use crate::models::error::ApplicationError;
 use crate::repositories::DatabaseConnection;
 use crate::services::anime_service::AnimeService;
+use crate::services::season_service::SeasonService;
 use crate::services::user_service::UserService;
 
 pub struct ArkalisGrpcServerServices {
     user_service: UserService,
     config: Arc<Config>,
     anime_service: AnimeService,
-    database_connection: Arc<DatabaseConnection>
+    database_connection: Arc<DatabaseConnection>,
+    season_service: SeasonService,
 }
 
 impl ArkalisGrpcServerServices {
@@ -40,7 +42,10 @@ impl ArkalisGrpcServerServices {
             anime_service: AnimeService {
                 database_connection: database_connection.clone(),
             },
-            database_connection
+            database_connection: database_connection.clone(),
+            season_service: SeasonService {
+                database_connection,
+            },
         }
     }
 
@@ -120,6 +125,18 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         let response = self
             .anime_service
             .update_anime(request.into_inner(), &user)
+            .await?;
+        Ok(Response::new(response))
+    }
+
+    async fn add_season(
+        &self,
+        request: Request<AddSeasonRequest>,
+    ) -> Result<Response<AddSeasonResponse>, Status> {
+        let user = request.get_user(&self.config)?;
+        let response = self
+            .season_service
+            .add_season(request.into_inner(), &user)
             .await?;
         Ok(Response::new(response))
     }

@@ -6,6 +6,7 @@ pub mod config;
 pub mod error;
 mod genre;
 pub mod roles;
+pub mod season;
 mod title;
 mod title_type;
 pub mod user;

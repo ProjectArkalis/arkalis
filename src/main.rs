@@ -18,7 +18,10 @@ async fn main() -> anyhow::Result<()> {
     pretty_env_logger::init();
     let addr = "127.0.0.1:8000".parse()?;
     let service = ArkalisGrpcServerServices::new().await;
-    service.startup_routine().await.expect("Failed to migrate database");
+    service
+        .startup_routine()
+        .await
+        .expect("Failed to migrate database");
 
     Server::builder()
         .add_service(ArkalisCoreServiceServer::new(service))

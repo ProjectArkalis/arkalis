@@ -116,6 +116,17 @@ message EditAnimeRequest {
 
 message EditAnimeResponse {}
 
+message AddSeasonRequest {
+    string name = 1;
+    optional string cover_id = 2;
+    uint32  anime_id = 3;
+    uint32 sequence = 4;
+}
+
+message AddSeasonResponse {
+    uint32 id = 1;
+}
+
 service ArkalisCoreService {
     rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
     rpc CreateAdmin(CreateAdminRequest) returns (CreateAdminResponse);
@@ -124,4 +135,5 @@ service ArkalisCoreService {
     rpc GetAnimeById(GetAnimeByIdRequest) returns (GetAnimeByIdResponse);
     rpc SearchAnime(SearchAnimeRequest) returns (SearchAnimeResponse);
     rpc EditAnime(EditAnimeRequest) returns (EditAnimeResponse);
+    rpc AddSeason(AddSeasonRequest) returns (AddSeasonResponse);
 }

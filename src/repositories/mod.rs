@@ -1,8 +1,9 @@
 use crate::models::config::Config;
-use sqlx::{MySql, MySqlPool, Pool};
 use crate::models::error::ApplicationError;
+use sqlx::{MySql, MySqlPool, Pool};
 
 pub mod anime_repository;
+pub mod season_repository;
 pub mod user_repository;
 
 pub struct DatabaseConnection {
@@ -16,13 +17,13 @@ impl DatabaseConnection {
             .expect("Failed to connect to database");
         Self { connection: conn }
     }
-    
+
     pub async fn migrate_database(&self) -> Result<(), ApplicationError> {
         sqlx::migrate!()
             .run(&self.connection)
             .await
             .map_err(|e| ApplicationError::UnknownError(e.into()))?;
-        
+
         Ok(())
     }
 }
