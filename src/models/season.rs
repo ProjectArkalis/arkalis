@@ -1,5 +1,6 @@
 use crate::arkalis_service;
-use crate::arkalis_service::AddSeasonRequest;
+use crate::arkalis_service::{AddSeasonRequest, EditSeasonRequest};
+use crate::extensions::OptionToAppResult;
 use crate::models::error::ApplicationError;
 use crate::models::roles::Roles;
 use crate::models::user::User;
@@ -32,6 +33,28 @@ impl Season {
         };
 
         Ok(season)
+    }
+
+    pub fn edit(
+        mut self,
+        new_data: EditSeasonRequest,
+        user: &User,
+    ) -> Result<Self, ApplicationError> {
+        if user.role != Roles::Admin {
+            return Err(ApplicationError::Unauthorized);
+        }
+
+        if new_data.id != self.id.ok_or_app_result("entity id is null")? {
+            return Err(ApplicationError::UnknownError(anyhow::Error::msg(
+                "entity id does not match the request",
+            )));
+        }
+
+        self.name = new_data.name;
+        self.cover_id = new_data.cover_id;
+        self.sequence = new_data.sequence as u16;
+
+        Ok(self)
     }
 }
 

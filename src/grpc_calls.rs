@@ -6,12 +6,12 @@ use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreService;
 use crate::arkalis_service::{
     AddSeasonRequest, AddSeasonResponse, CreateAdminRequest, CreateAdminResponse,
     CreateAnimeRequest, CreateAnimeResponse, CreateTokenRequest, CreateTokenResponse,
-    EditAnimeRequest, EditAnimeResponse, GetAnimeByIdRequest, GetAnimeByIdResponse,
-    GetAnimeSeasonsRequest, GetAnimeSeasonsResponse, GetLastSeasonSequenceRequest,
-    GetLastSeasonSequenceResponse, GetUserInfoRequest, GetUserInfoResponse, SearchAnimeRequest,
-    SearchAnimeResponse,
+    EditAnimeRequest, EditAnimeResponse, EditSeasonRequest, EditSeasonResponse,
+    GetAnimeByIdRequest, GetAnimeByIdResponse, GetAnimeSeasonsRequest, GetAnimeSeasonsResponse,
+    GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse, GetUserInfoRequest,
+    GetUserInfoResponse, SearchAnimeRequest, SearchAnimeResponse,
 };
-use crate::authentication::Authentication;
+use crate::extensions::Authentication;
 use crate::models::arguments::Cli;
 use crate::models::config::Config;
 use crate::models::error::ApplicationError;
@@ -161,6 +161,18 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         let response = self
             .season_service
             .get_by_anime(request.into_inner())
+            .await?;
+        Ok(Response::new(response))
+    }
+
+    async fn edit_season(
+        &self,
+        request: Request<EditSeasonRequest>,
+    ) -> Result<Response<EditSeasonResponse>, Status> {
+        let user = request.get_user(&self.config)?;
+        let response = self
+            .season_service
+            .update_season(request.into_inner(), &user)
             .await?;
         Ok(Response::new(response))
     }

@@ -1,7 +1,8 @@
+use sqlx::Row;
+
 use crate::models::error::ApplicationError;
 use crate::models::season::Season;
 use crate::repositories::DatabaseConnection;
-use sqlx::Row;
 
 pub async fn season_add(
     conn: &DatabaseConnection,
@@ -48,6 +49,36 @@ pub async fn season_get_by_anime(
         .fetch_all(&conn.connection)
         .await
         .map_err(|e| ApplicationError::UnknownError(e.into()))?;
+
+    Ok(result)
+}
+
+pub async fn season_update(
+    conn: &DatabaseConnection,
+    season: Season,
+) -> Result<(), ApplicationError> {
+    sqlx::query("update seasons set name = ?, cover_id = ?, sequence = ? where id = ?")
+        .bind(season.name)
+        .bind(season.cover_id)
+        .bind(season.sequence)
+        .bind(season.id)
+        .execute(&conn.connection)
+        .await
+        .map_err(|e| ApplicationError::UnknownError(e.into()))?;
+
+    Ok(())
+}
+
+pub async fn season_bu_id(
+    conn: &DatabaseConnection,
+    season_id: u32,
+) -> Result<Season, ApplicationError> {
+    let result = sqlx::query_as("select * from seasons where id = ?")
+        .bind(season_id)
+        .fetch_optional(&conn.connection)
+        .await
+        .map_err(|e| ApplicationError::UnknownError(e.into()))?
+        .ok_or(ApplicationError::NotFound)?;
 
     Ok(result)
 }

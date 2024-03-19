@@ -1,13 +1,17 @@
+use std::sync::Arc;
+
+use validator::Validate;
+
 use crate::arkalis_service::{
-    AddSeasonRequest, AddSeasonResponse, GetAnimeSeasonsRequest, GetAnimeSeasonsResponse,
-    GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse,
+    AddSeasonRequest, AddSeasonResponse, EditSeasonRequest, EditSeasonResponse,
+    GetAnimeSeasonsRequest, GetAnimeSeasonsResponse, GetLastSeasonSequenceRequest,
+    GetLastSeasonSequenceResponse,
 };
 use crate::models::error::ApplicationError;
 use crate::models::season::Season;
 use crate::models::user::User;
 use crate::repositories::season_repository;
 use crate::repositories::DatabaseConnection;
-use std::sync::Arc;
 
 pub struct SeasonService {
     pub database_connection: Arc<DatabaseConnection>,
@@ -51,5 +55,18 @@ impl SeasonService {
         Ok(GetAnimeSeasonsResponse {
             seasons: seasons.into_iter().map(|s| s.into()).collect(),
         })
+    }
+
+    pub async fn update_season(
+        &self,
+        update_data: EditSeasonRequest,
+        user: &User,
+    ) -> Result<EditSeasonResponse, ApplicationError> {
+        let season =
+            season_repository::season_bu_id(&self.database_connection, update_data.id).await?;
+        let season = season.edit(update_data, user)?;
+        season.validate()?;
+        season_repository::season_update(&self.database_connection, season).await?;
+        Ok(EditSeasonResponse {})
     }
 }

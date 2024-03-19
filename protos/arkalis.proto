@@ -151,6 +151,15 @@ message GetAnimeSeasonsResponse {
     repeated Season seasons = 1;
 }
 
+message EditSeasonRequest {
+    uint32 id = 1;
+    string name = 2;
+    optional string cover_id = 3;
+    uint32 sequence = 4;
+}
+
+message EditSeasonResponse {}
+
 service ArkalisCoreService {
     rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
     rpc CreateAdmin(CreateAdminRequest) returns (CreateAdminResponse);
@@ -162,4 +171,5 @@ service ArkalisCoreService {
     rpc AddSeason(AddSeasonRequest) returns (AddSeasonResponse);
     rpc GetLastSeasonSequence(GetLastSeasonSequenceRequest) returns (GetLastSeasonSequenceResponse);
     rpc GetAnimeSeasons(GetAnimeSeasonsRequest) returns (GetAnimeSeasonsResponse);
+    rpc EditSeason(EditSeasonRequest) returns (EditSeasonResponse);
 }

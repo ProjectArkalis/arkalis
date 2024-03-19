@@ -89,7 +89,7 @@ impl Anime {
         update_data: EditAnimeRequest,
         user: &User,
     ) -> Result<Self, ApplicationError> {
-        if !user.has_uploader_or_adm_role() {
+        if user.role != Roles::Admin {
             return Err(ApplicationError::Unauthorized);
         }
 

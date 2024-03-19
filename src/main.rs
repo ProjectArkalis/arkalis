@@ -3,7 +3,7 @@ use tonic::transport::Server;
 use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreServiceServer;
 use crate::grpc_calls::ArkalisGrpcServerServices;
 
-mod authentication;
+mod extensions;
 mod grpc_calls;
 mod models;
 mod repositories;
