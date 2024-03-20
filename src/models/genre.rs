@@ -7,6 +7,7 @@ pub struct Genre(u64);
 
 bitflags! {
     impl Genre: u64 {
+        const Unknown = 0;
         const Action = 1;
         const Comedy = 2;
         const Horror = 4;
@@ -55,6 +56,7 @@ impl Display for Genre {
             Genre::Ecchi => "Ecchi",
             Genre::Erotica => "Erotica",
             Genre::Hentai => "Hentai",
+            Genre::Unknown => "Desconhecido",
             _ => "Genero Invalido",
         };
 
