@@ -3,7 +3,7 @@ use crate::models::user::User;
 use crate::repositories::DatabaseConnection;
 
 pub async fn user_add(conn: &DatabaseConnection, user: User) -> Result<(), ApplicationError> {
-    sqlx::query("insert into users values (?, ?, ?)")
+    sqlx::query("insert into users(id, display_name, role) values (?, ?, ?)")
         .bind(user.id)
         .bind(user.display_name)
         .bind(user.role as u8)
