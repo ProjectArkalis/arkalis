@@ -3,8 +3,12 @@ use std::collections::BTreeMap;
 use hmac::digest::core_api::CoreWrapper;
 use hmac::{Hmac, HmacCore};
 use jwt::{Header, SignWithKey, Token, VerifyWithKey};
+use khash::Digest;
+use num_traits::FromPrimitive;
 use sha2::digest::Mac;
 use sha2::Sha256;
+use sqlx::mysql::MySqlRow;
+use sqlx::{Error, FromRow, Row};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -21,6 +25,7 @@ pub struct User {
     pub role: Roles,
     pub mal_profile: Option<String>,
     pub anilist_profile: Option<String>,
+    pub recovery_key: Option<String>,
 }
 
 impl User {
@@ -32,6 +37,7 @@ impl User {
             role: Roles::User,
             mal_profile: None,
             anilist_profile: None,
+            recovery_key: None,
         }
     }
 
@@ -72,6 +78,7 @@ impl User {
             role: Roles::from(claims["role"].as_str()),
             mal_profile,
             anilist_profile,
+            recovery_key: None,
         };
 
         Ok(user)
@@ -93,6 +100,14 @@ impl User {
 
     pub fn has_uploader_or_adm_role(&self) -> bool {
         self.role == Roles::Uploader || self.role == Roles::Admin
+    }
+
+    pub fn get_recovery_mnemonic(&mut self) -> String {
+        if self.recovery_key.is_none() {
+            self.recovery_key = Some(Digest::new(&mut self.id.as_bytes()).collect());
+        }
+
+        self.recovery_key.as_ref().unwrap().clone()
     }
 
     fn get_jwt_key(config: &Config) -> Result<CoreWrapper<HmacCore<Sha256>>, ApplicationError> {
@@ -119,5 +134,24 @@ impl From<User> for GetUserInfoResponse {
             mal_profile: value.mal_profile,
             anilist_profile: value.anilist_profile,
         }
+    }
+}
+
+impl FromRow<'_, MySqlRow> for User {
+    fn from_row(row: &'_ MySqlRow) -> Result<Self, Error> {
+        let role = Roles::from_u8(row.try_get("role")?).ok_or(Error::TypeNotFound {
+            type_name: "Roles".into(),
+        })?;
+
+        let user = Self {
+            id: row.try_get("id")?,
+            display_name: row.try_get("display_name")?,
+            role,
+            mal_profile: None,
+            anilist_profile: None,
+            recovery_key: row.try_get("recovery_key")?,
+        };
+
+        Ok(user)
     }
 }

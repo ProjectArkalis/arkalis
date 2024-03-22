@@ -1,4 +1,6 @@
-#[derive(PartialEq, Eq, Clone, Copy)]
+use num_derive::{FromPrimitive, ToPrimitive};
+
+#[derive(PartialEq, Eq, Clone, Copy, FromPrimitive, ToPrimitive)]
 #[repr(u8)]
 pub enum Roles {
     Admin,

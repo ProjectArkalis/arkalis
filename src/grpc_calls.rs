@@ -5,11 +5,12 @@ use tonic::{Request, Response, Status};
 use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreService;
 use crate::arkalis_service::{
     AddSeasonRequest, AddSeasonResponse, CreateAdminRequest, CreateAdminResponse,
-    CreateAnimeRequest, CreateAnimeResponse, CreateTokenRequest, CreateTokenResponse,
-    EditAnimeRequest, EditAnimeResponse, EditSeasonRequest, EditSeasonResponse,
-    GetAnimeByIdRequest, GetAnimeByIdResponse, GetAnimeSeasonsRequest, GetAnimeSeasonsResponse,
-    GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse, GetUserInfoRequest,
-    GetUserInfoResponse, SearchAnimeRequest, SearchAnimeResponse,
+    CreateAnimeRequest, CreateAnimeResponse, CreateRecoveryKeyRequest, CreateRecoveryKeyResponse,
+    CreateTokenRequest, CreateTokenResponse, EditAnimeRequest, EditAnimeResponse,
+    EditSeasonRequest, EditSeasonResponse, GetAnimeByIdRequest, GetAnimeByIdResponse,
+    GetAnimeSeasonsRequest, GetAnimeSeasonsResponse, GetLastSeasonSequenceRequest,
+    GetLastSeasonSequenceResponse, GetUserInfoRequest, GetUserInfoResponse, RecoveryUserRequest,
+    RecoveryUserResponse, SearchAnimeRequest, SearchAnimeResponse,
 };
 use crate::extensions::Authentication;
 use crate::models::arguments::Cli;
@@ -96,6 +97,26 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         let response = self
             .anime_service
             .add_anime(request.into_inner(), &user)
+            .await?;
+        Ok(Response::new(response))
+    }
+
+    async fn create_recovery_key(
+        &self,
+        request: Request<CreateRecoveryKeyRequest>,
+    ) -> Result<Response<CreateRecoveryKeyResponse>, Status> {
+        let user = request.get_user(&self.config)?;
+        let response = self.user_service.get_recovery_key(user).await?;
+        Ok(Response::new(response))
+    }
+
+    async fn recovery_user(
+        &self,
+        request: Request<RecoveryUserRequest>,
+    ) -> Result<Response<RecoveryUserResponse>, Status> {
+        let response = self
+            .user_service
+            .recovery_user(request.into_inner())
             .await?;
         Ok(Response::new(response))
     }

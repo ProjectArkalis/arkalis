@@ -160,11 +160,27 @@ message EditSeasonRequest {
 
 message EditSeasonResponse {}
 
+message CreateRecoveryKeyRequest {}
+
+message CreateRecoveryKeyResponse {
+    string recovery_key = 1;
+}
+
+message RecoveryUserRequest {
+    string recovery_key = 1;
+}
+
+message RecoveryUserResponse {
+    string token = 1;
+}
+
 service ArkalisCoreService {
     rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
     rpc CreateAdmin(CreateAdminRequest) returns (CreateAdminResponse);
     rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse);
     rpc CreateAnime(CreateAnimeRequest) returns (CreateAnimeResponse);
+    rpc CreateRecoveryKey(CreateRecoveryKeyRequest) returns (CreateRecoveryKeyResponse);
+    rpc RecoveryUser(RecoveryUserRequest) returns (RecoveryUserResponse);
     rpc GetAnimeById(GetAnimeByIdRequest) returns (GetAnimeByIdResponse);
     rpc SearchAnime(SearchAnimeRequest) returns (SearchAnimeResponse);
     rpc EditAnime(EditAnimeRequest) returns (EditAnimeResponse);
