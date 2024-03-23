@@ -1,5 +1,6 @@
-use bitflags::bitflags;
 use std::fmt::{Display, Formatter};
+
+use bitflags::bitflags;
 
 #[derive(PartialEq, Eq)]
 pub struct SourceType(u64);
@@ -12,7 +13,7 @@ bitflags! {
         const EnglishSub = 8;
         const PortugueseSub = 16;
         const EspanishSub = 32;
-        const EspanishDub = 64;
+        const SpanishDub = 64;
     }
 }
 
@@ -25,7 +26,7 @@ impl Display for SourceType {
             SourceType::EnglishSub => "Legendas em Inglês",
             SourceType::PortugueseSub => "Legendas em Português",
             SourceType::EspanishSub => "Legendas em Espanhol",
-            SourceType::EspanishDub => "Dublagem em Espanhol",
+            SourceType::SpanishDub => "Dublagem em Espanhol",
             _ => "Unknown",
         };
 

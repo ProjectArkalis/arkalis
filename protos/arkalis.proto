@@ -184,6 +184,21 @@ message CreateSourceResponse {
     uint32 id = 1;
 }
 
+message Sources {
+    uint32 id = 1;
+    string name = 2;
+    uint64 source_type = 3;
+    uint32 priority = 4;
+}
+
+message GetSourcesRequest {
+    optional uint64 source_type = 1;
+}
+
+message GetSourcesResponse {
+    repeated Sources sources = 1;
+}
+
 service ArkalisCoreService {
     rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
     rpc CreateAdmin(CreateAdminRequest) returns (CreateAdminResponse);
@@ -199,4 +214,5 @@ service ArkalisCoreService {
     rpc GetAnimeSeasons(GetAnimeSeasonsRequest) returns (GetAnimeSeasonsResponse);
     rpc EditSeason(EditSeasonRequest) returns (EditSeasonResponse);
     rpc CreateSource(CreateSourceRequest) returns (CreateSourceResponse);
+    rpc GetSources(GetSourcesRequest) returns (GetSourcesResponse);
 }

@@ -1,4 +1,6 @@
-use crate::arkalis_service::{CreateSourceRequest, CreateSourceResponse};
+use crate::arkalis_service::{
+    CreateSourceRequest, CreateSourceResponse, GetSourcesRequest, GetSourcesResponse, Sources,
+};
 use crate::models::error::ApplicationError;
 use crate::models::source::Source;
 use crate::models::user::User;
@@ -20,5 +22,14 @@ impl SourceService {
         source.validate()?;
         let id = source_repository::source_add(&self.database_connection, source).await?;
         Ok(CreateSourceResponse { id })
+    }
+
+    pub async fn get_sources(
+        &self,
+        filters: GetSourcesRequest,
+    ) -> Result<GetSourcesResponse, ApplicationError> {
+        let sources = source_repository::source_get(&self.database_connection, filters).await?;
+        let items = sources.into_iter().map(Sources::from).collect();
+        Ok(GetSourcesResponse { sources: items })
     }
 }
