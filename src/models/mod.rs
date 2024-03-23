@@ -7,6 +7,8 @@ pub mod error;
 mod genre;
 pub mod roles;
 pub mod season;
+pub mod source;
+pub mod source_type;
 mod title;
 mod title_type;
 pub mod user;

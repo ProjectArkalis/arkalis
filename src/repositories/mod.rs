@@ -4,6 +4,7 @@ use sqlx::{MySql, MySqlPool, Pool};
 
 pub mod anime_repository;
 pub mod season_repository;
+pub mod source_repository;
 pub mod user_repository;
 
 pub struct DatabaseConnection {

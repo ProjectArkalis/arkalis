@@ -6,11 +6,12 @@ use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreService;
 use crate::arkalis_service::{
     AddSeasonRequest, AddSeasonResponse, CreateAdminRequest, CreateAdminResponse,
     CreateAnimeRequest, CreateAnimeResponse, CreateRecoveryKeyRequest, CreateRecoveryKeyResponse,
-    CreateTokenRequest, CreateTokenResponse, EditAnimeRequest, EditAnimeResponse,
-    EditSeasonRequest, EditSeasonResponse, GetAnimeByIdRequest, GetAnimeByIdResponse,
-    GetAnimeSeasonsRequest, GetAnimeSeasonsResponse, GetLastSeasonSequenceRequest,
-    GetLastSeasonSequenceResponse, GetUserInfoRequest, GetUserInfoResponse, RecoveryUserRequest,
-    RecoveryUserResponse, SearchAnimeRequest, SearchAnimeResponse,
+    CreateSourceRequest, CreateSourceResponse, CreateTokenRequest, CreateTokenResponse,
+    EditAnimeRequest, EditAnimeResponse, EditSeasonRequest, EditSeasonResponse,
+    GetAnimeByIdRequest, GetAnimeByIdResponse, GetAnimeSeasonsRequest, GetAnimeSeasonsResponse,
+    GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse, GetUserInfoRequest,
+    GetUserInfoResponse, RecoveryUserRequest, RecoveryUserResponse, SearchAnimeRequest,
+    SearchAnimeResponse,
 };
 use crate::extensions::Authentication;
 use crate::models::arguments::Cli;
@@ -19,6 +20,7 @@ use crate::models::error::ApplicationError;
 use crate::repositories::DatabaseConnection;
 use crate::services::anime_service::AnimeService;
 use crate::services::season_service::SeasonService;
+use crate::services::source_service::SourceService;
 use crate::services::user_service::UserService;
 
 pub struct ArkalisGrpcServerServices {
@@ -27,6 +29,7 @@ pub struct ArkalisGrpcServerServices {
     anime_service: AnimeService,
     database_connection: Arc<DatabaseConnection>,
     season_service: SeasonService,
+    source_service: SourceService
 }
 
 impl ArkalisGrpcServerServices {
@@ -47,8 +50,11 @@ impl ArkalisGrpcServerServices {
             },
             database_connection: database_connection.clone(),
             season_service: SeasonService {
-                database_connection,
+                database_connection: database_connection.clone()
             },
+            source_service: SourceService {
+                database_connection
+            }
         }
     }
 
@@ -195,6 +201,15 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
             .season_service
             .update_season(request.into_inner(), &user)
             .await?;
+        Ok(Response::new(response))
+    }
+
+    async fn create_source(
+        &self,
+        request: Request<CreateSourceRequest>,
+    ) -> Result<Response<CreateSourceResponse>, Status> {
+        let user = request.get_user(&self.config)?;
+        let response = self.source_service.add_source(request.into_inner(), &user).await?;
         Ok(Response::new(response))
     }
 }
