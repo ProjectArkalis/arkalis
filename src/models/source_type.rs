@@ -12,8 +12,8 @@ bitflags! {
         const PortugueseDub = 4;
         const EnglishSub = 8;
         const PortugueseSub = 16;
-        const EspanishSub = 32;
-        const SpanishDub = 64;
+        const NarcoSub = 32;
+        const NarcoDub = 64;
     }
 }
 
@@ -25,8 +25,8 @@ impl Display for SourceType {
             SourceType::PortugueseDub => "Dublagem em Português",
             SourceType::EnglishSub => "Legendas em Inglês",
             SourceType::PortugueseSub => "Legendas em Português",
-            SourceType::EspanishSub => "Legendas em Espanhol",
-            SourceType::SpanishDub => "Dublagem em Espanhol",
+            SourceType::NarcoSub => "Legendas em Espanhol",
+            SourceType::NarcoDub => "Dublagem em Espanhol",
             _ => "Unknown",
         };
 
