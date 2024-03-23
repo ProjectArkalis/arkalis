@@ -29,7 +29,7 @@ pub struct ArkalisGrpcServerServices {
     anime_service: AnimeService,
     database_connection: Arc<DatabaseConnection>,
     season_service: SeasonService,
-    source_service: SourceService
+    source_service: SourceService,
 }
 
 impl ArkalisGrpcServerServices {
@@ -50,11 +50,11 @@ impl ArkalisGrpcServerServices {
             },
             database_connection: database_connection.clone(),
             season_service: SeasonService {
-                database_connection: database_connection.clone()
+                database_connection: database_connection.clone(),
             },
             source_service: SourceService {
-                database_connection
-            }
+                database_connection,
+            },
         }
     }
 
@@ -209,7 +209,10 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         request: Request<CreateSourceRequest>,
     ) -> Result<Response<CreateSourceResponse>, Status> {
         let user = request.get_user(&self.config)?;
-        let response = self.source_service.add_source(request.into_inner(), &user).await?;
+        let response = self
+            .source_service
+            .add_source(request.into_inner(), &user)
+            .await?;
         Ok(Response::new(response))
     }
 }
