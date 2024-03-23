@@ -7,11 +7,11 @@ use crate::arkalis_service::{
     AddSeasonRequest, AddSeasonResponse, CreateAdminRequest, CreateAdminResponse,
     CreateAnimeRequest, CreateAnimeResponse, CreateRecoveryKeyRequest, CreateRecoveryKeyResponse,
     CreateSourceRequest, CreateSourceResponse, CreateTokenRequest, CreateTokenResponse,
-    EditAnimeRequest, EditAnimeResponse, EditSeasonRequest, EditSeasonResponse,
-    GetAnimeByIdRequest, GetAnimeByIdResponse, GetAnimeSeasonsRequest, GetAnimeSeasonsResponse,
-    GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse, GetSourcesRequest,
-    GetSourcesResponse, GetUserInfoRequest, GetUserInfoResponse, RecoveryUserRequest,
-    RecoveryUserResponse, SearchAnimeRequest, SearchAnimeResponse,
+    EditAnimeRequest, EditAnimeResponse, EditSeasonRequest, EditSeasonResponse, EditSourceRequest,
+    EditSourceResponse, GetAnimeByIdRequest, GetAnimeByIdResponse, GetAnimeSeasonsRequest,
+    GetAnimeSeasonsResponse, GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse,
+    GetSourcesRequest, GetSourcesResponse, GetUserInfoRequest, GetUserInfoResponse,
+    RecoveryUserRequest, RecoveryUserResponse, SearchAnimeRequest, SearchAnimeResponse,
 };
 use crate::extensions::Authentication;
 use crate::models::arguments::Cli;
@@ -223,6 +223,18 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         let response = self
             .source_service
             .get_sources(request.into_inner())
+            .await?;
+        Ok(Response::new(response))
+    }
+
+    async fn edit_source(
+        &self,
+        request: Request<EditSourceRequest>,
+    ) -> Result<Response<EditSourceResponse>, Status> {
+        let user = request.get_user(&self.config)?;
+        let response = self
+            .source_service
+            .update_source(request.into_inner(), &user)
             .await?;
         Ok(Response::new(response))
     }

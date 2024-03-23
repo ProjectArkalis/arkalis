@@ -3,7 +3,8 @@ use sqlx::mysql::MySqlRow;
 use sqlx::{Error, FromRow, Row};
 use validator::Validate;
 
-use crate::arkalis_service::CreateSourceRequest;
+use crate::arkalis_service::{CreateSourceRequest, EditSourceRequest};
+use crate::extensions::OptionToAppResult;
 use crate::models::error::ApplicationError;
 use crate::models::roles::Roles;
 use crate::models::source_type::SourceType;
@@ -37,6 +38,29 @@ impl Source {
         };
 
         Ok(source)
+    }
+
+    pub fn edit(
+        mut self,
+        edit_data: EditSourceRequest,
+        user: &User,
+    ) -> Result<Self, ApplicationError> {
+        if user.role != Roles::Admin {
+            return Err(ApplicationError::Unauthorized);
+        }
+
+        if edit_data.id != self.id.ok_or_app_result("entity id is null")? {
+            return Err(ApplicationError::UnknownError(anyhow::Error::msg(
+                "entity id does not match the request",
+            )));
+        }
+
+        self.name = edit_data.name;
+        self.source_type = SourceType::from_bits(edit_data.source_type)
+            .ok_or_app_result("source_type is not a valid source type")?;
+        self.priority = edit_data.priority as u8;
+
+        Ok(self)
     }
 }
 

@@ -73,3 +73,30 @@ pub async fn source_get(
 
     Ok(result)
 }
+
+pub async fn source_update(
+    conn: &DatabaseConnection,
+    source: Source,
+) -> Result<(), ApplicationError> {
+    sqlx::query("update sources set name = ?, source_type = ?, priority = ? where id = ?")
+        .bind(source.name)
+        .bind(source.source_type.bits())
+        .bind(source.priority)
+        .bind(source.id)
+        .execute(&conn.connection)
+        .await
+        .map_err(|e| ApplicationError::UnknownError(e.into()))?;
+
+    Ok(())
+}
+
+pub async fn source_by_id(conn: &DatabaseConnection, id: u32) -> Result<Source, ApplicationError> {
+    let result = sqlx::query_as("select * from sources where id = ?")
+        .bind(id)
+        .fetch_optional(&conn.connection)
+        .await
+        .map_err(|e| ApplicationError::UnknownError(e.into()))?
+        .ok_or(ApplicationError::NotFound)?;
+
+    Ok(result)
+}

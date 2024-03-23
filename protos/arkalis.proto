@@ -199,6 +199,15 @@ message GetSourcesResponse {
     repeated Sources sources = 1;
 }
 
+message EditSourceRequest {
+    uint32 id = 1;
+    string name = 2;
+    uint64 source_type = 3;
+    uint32 priority = 4;
+}
+
+message EditSourceResponse {}
+
 service ArkalisCoreService {
     rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
     rpc CreateAdmin(CreateAdminRequest) returns (CreateAdminResponse);
@@ -215,4 +224,5 @@ service ArkalisCoreService {
     rpc EditSeason(EditSeasonRequest) returns (EditSeasonResponse);
     rpc CreateSource(CreateSourceRequest) returns (CreateSourceResponse);
     rpc GetSources(GetSourcesRequest) returns (GetSourcesResponse);
+    rpc EditSource(EditSourceRequest) returns (EditSourceResponse);
 }
