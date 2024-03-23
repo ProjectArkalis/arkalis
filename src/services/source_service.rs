@@ -1,6 +1,6 @@
 use crate::arkalis_service::{
     CreateSourceRequest, CreateSourceResponse, EditSourceRequest, EditSourceResponse,
-    GetSourcesRequest, GetSourcesResponse, Sources,
+    GetSourceByIdRequest, GetSourceByIdResponse, GetSourcesRequest, GetSourcesResponse, Sources,
 };
 use crate::models::error::ApplicationError;
 use crate::models::source::Source;
@@ -45,5 +45,15 @@ impl SourceService {
         source.validate()?;
         source_repository::source_update(&self.database_connection, source).await?;
         Ok(EditSourceResponse {})
+    }
+
+    pub async fn get_source_by_id(
+        &self,
+        id: GetSourceByIdRequest,
+    ) -> Result<GetSourceByIdResponse, ApplicationError> {
+        let source = source_repository::source_by_id(&self.database_connection, id.id).await?;
+        Ok(GetSourceByIdResponse {
+            source: Some(source.into()),
+        })
     }
 }

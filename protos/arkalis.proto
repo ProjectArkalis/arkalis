@@ -208,6 +208,14 @@ message EditSourceRequest {
 
 message EditSourceResponse {}
 
+message GetSourceByIdRequest {
+    uint32 id = 1;
+}
+
+message GetSourceByIdResponse {
+    Sources source = 1;
+}
+
 service ArkalisCoreService {
     rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
     rpc CreateAdmin(CreateAdminRequest) returns (CreateAdminResponse);
@@ -225,4 +233,5 @@ service ArkalisCoreService {
     rpc CreateSource(CreateSourceRequest) returns (CreateSourceResponse);
     rpc GetSources(GetSourcesRequest) returns (GetSourcesResponse);
     rpc EditSource(EditSourceRequest) returns (EditSourceResponse);
+    rpc GetSourceById(GetSourceByIdRequest) returns (GetSourceByIdResponse);
 }
