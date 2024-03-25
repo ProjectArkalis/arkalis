@@ -1,6 +1,7 @@
 use crate::arkalis_service::SearchAnimeRequest;
 use crate::models::anime::Anime;
 use crate::models::error::ApplicationError;
+use crate::repositories::anime_repository::AnimeQueryTable::IsHidden;
 use crate::repositories::DatabaseConnection;
 use chrono::DateTime;
 use sea_query::{Expr, Iden, MysqlQueryBuilder, Query, SimpleExpr};
@@ -76,9 +77,22 @@ pub async fn anime_add(conn: &DatabaseConnection, anime: Anime) -> Result<u32, A
 pub async fn anime_get_by_id(
     conn: &DatabaseConnection,
     id: u32,
+    show_all: bool,
 ) -> Result<Anime, ApplicationError> {
-    let result = sqlx::query_as("select * from animes where id = ?")
-        .bind(id)
+    let query = Query::select()
+        .columns(get_columns())
+        .from(AnimeQueryTable::Table)
+        .and_where(Expr::col(AnimeQueryTable::Id).eq(id))
+        .conditions(
+            !show_all,
+            |q| {
+                q.and_where(Expr::col(IsHidden).eq(false));
+            },
+            |_| {},
+        )
+        .to_string(MysqlQueryBuilder);
+
+    let result = sqlx::query_as(&query)
         .fetch_optional(&conn.connection)
         .await
         .map_err(|e| ApplicationError::UnknownError(e.into()))?
@@ -90,6 +104,7 @@ pub async fn anime_get_by_id(
 pub async fn anime_search(
     conn: &DatabaseConnection,
     filters: SearchAnimeRequest,
+    show_all: bool,
 ) -> Result<Vec<Anime>, ApplicationError> {
     let SearchAnimeRequest {
         title,
@@ -121,21 +136,7 @@ pub async fn anime_search(
     };
 
     let query = Query::select()
-        .columns([
-            AnimeQueryTable::Id,
-            AnimeQueryTable::Titles,
-            AnimeQueryTable::TitleSearch,
-            AnimeQueryTable::Synopsis,
-            AnimeQueryTable::ThumbnailId,
-            AnimeQueryTable::BannerId,
-            AnimeQueryTable::IsHidden,
-            AnimeQueryTable::IsNsfw,
-            AnimeQueryTable::CreatedBy,
-            AnimeQueryTable::CreatedAt,
-            AnimeQueryTable::Genre,
-            AnimeQueryTable::ReleaseDate,
-            AnimeQueryTable::AnimeInLists,
-        ])
+        .columns(get_columns())
         .from(AnimeQueryTable::Table)
         .conditions(
             title.is_some(),
@@ -181,6 +182,13 @@ pub async fn anime_search(
             },
             |_| {},
         )
+        .conditions(
+            !show_all,
+            |q| {
+                q.and_where(Expr::col(AnimeQueryTable::IsHidden).eq(false));
+            },
+            |_| {},
+        )
         .to_string(MysqlQueryBuilder);
 
     let result = sqlx::query_as(&query)
@@ -213,4 +221,22 @@ pub async fn anime_update(conn: &DatabaseConnection, anime: Anime) -> Result<(),
 
 fn complete_like(col: AnimeQueryTable, value: String) -> SimpleExpr {
     Expr::col(col).like(format!("%{}%", value))
+}
+
+fn get_columns() -> [AnimeQueryTable; 13] {
+    [
+        AnimeQueryTable::Id,
+        AnimeQueryTable::Titles,
+        AnimeQueryTable::TitleSearch,
+        AnimeQueryTable::Synopsis,
+        AnimeQueryTable::ThumbnailId,
+        AnimeQueryTable::BannerId,
+        AnimeQueryTable::IsHidden,
+        AnimeQueryTable::IsNsfw,
+        AnimeQueryTable::CreatedBy,
+        AnimeQueryTable::CreatedAt,
+        AnimeQueryTable::Genre,
+        AnimeQueryTable::ReleaseDate,
+        AnimeQueryTable::AnimeInLists,
+    ]
 }

@@ -29,9 +29,15 @@ impl AnimeService {
     pub async fn get_anime(
         &self,
         data: GetAnimeByIdRequest,
+        user: &Option<User>,
     ) -> Result<GetAnimeByIdResponse, ApplicationError> {
         let id = data.id;
-        let anime = anime_repository::anime_get_by_id(&self.database_connection, id)
+        let show_all = if let Some(user) = user {
+            user.has_uploader_or_adm_role()
+        } else {
+            false
+        };
+        let anime = anime_repository::anime_get_by_id(&self.database_connection, id, show_all)
             .await?
             .into();
         Ok(GetAnimeByIdResponse { anime: Some(anime) })
@@ -40,8 +46,15 @@ impl AnimeService {
     pub async fn search_anime(
         &self,
         filters: SearchAnimeRequest,
+        user: &Option<User>,
     ) -> Result<SearchAnimeResponse, ApplicationError> {
-        let animes = anime_repository::anime_search(&self.database_connection, filters).await?;
+        let show_all = if let Some(user) = user {
+            user.has_uploader_or_adm_role()
+        } else {
+            false
+        };
+        let animes =
+            anime_repository::anime_search(&self.database_connection, filters, show_all).await?;
         Ok(SearchAnimeResponse {
             animes: animes.into_iter().map(|anime| anime.into()).collect(),
         })
@@ -52,8 +65,10 @@ impl AnimeService {
         anime_update: EditAnimeRequest,
         user: &User,
     ) -> Result<EditAnimeResponse, ApplicationError> {
+        let show_all = user.has_uploader_or_adm_role();
         let anime =
-            anime_repository::anime_get_by_id(&self.database_connection, anime_update.id).await?;
+            anime_repository::anime_get_by_id(&self.database_connection, anime_update.id, show_all)
+                .await?;
         let anime = anime.update(anime_update, user)?;
         anime.validate()?;
         anime_repository::anime_update(&self.database_connection, anime).await?;

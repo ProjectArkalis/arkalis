@@ -132,7 +132,11 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         &self,
         request: Request<GetAnimeByIdRequest>,
     ) -> Result<Response<GetAnimeByIdResponse>, Status> {
-        let anime = self.anime_service.get_anime(request.into_inner()).await?;
+        let user = request.get_user(&self.config).ok();
+        let anime = self
+            .anime_service
+            .get_anime(request.into_inner(), &user)
+            .await?;
         Ok(Response::new(anime))
     }
 
@@ -140,9 +144,10 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         &self,
         request: Request<SearchAnimeRequest>,
     ) -> Result<Response<SearchAnimeResponse>, Status> {
+        let user = request.get_user(&self.config).ok();
         let animes = self
             .anime_service
-            .search_anime(request.into_inner())
+            .search_anime(request.into_inner(), &user)
             .await?;
         Ok(Response::new(animes))
     }
