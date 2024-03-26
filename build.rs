@@ -1,4 +1,6 @@
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    tonic_build::compile_protos("protos/arkalis.proto")?;
+    let conf = tonic_build::configure();
+    let conf = conf.protoc_arg("--experimental_allow_proto3_optional");
+    conf.compile(&["protos/arkalis.proto"], &[""])?;
     Ok(())
 }
