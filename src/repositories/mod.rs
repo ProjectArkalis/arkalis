@@ -3,6 +3,7 @@ use crate::models::error::ApplicationError;
 use sqlx::{MySql, MySqlPool, Pool};
 
 pub mod anime_repository;
+pub mod episode_repository;
 pub mod season_repository;
 pub mod source_repository;
 pub mod user_repository;

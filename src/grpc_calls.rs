@@ -5,14 +5,15 @@ use tonic::{Request, Response, Status};
 use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreService;
 use crate::arkalis_service::{
     AddSeasonRequest, AddSeasonResponse, CreateAdminRequest, CreateAdminResponse,
-    CreateAnimeRequest, CreateAnimeResponse, CreateRecoveryKeyRequest, CreateRecoveryKeyResponse,
-    CreateSourceRequest, CreateSourceResponse, CreateTokenRequest, CreateTokenResponse,
-    EditAnimeRequest, EditAnimeResponse, EditSeasonRequest, EditSeasonResponse, EditSourceRequest,
-    EditSourceResponse, GetAnimeByIdRequest, GetAnimeByIdResponse, GetAnimeSeasonsRequest,
-    GetAnimeSeasonsResponse, GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse,
-    GetSourceByIdRequest, GetSourceByIdResponse, GetSourcesRequest, GetSourcesResponse,
-    GetUserInfoRequest, GetUserInfoResponse, RecoveryUserRequest, RecoveryUserResponse,
-    SearchAnimeRequest, SearchAnimeResponse,
+    CreateAnimeRequest, CreateAnimeResponse, CreateEpisodeRequest, CreateEpisodeResponse,
+    CreateRecoveryKeyRequest, CreateRecoveryKeyResponse, CreateSourceRequest, CreateSourceResponse,
+    CreateTokenRequest, CreateTokenResponse, EditAnimeRequest, EditAnimeResponse,
+    EditSeasonRequest, EditSeasonResponse, EditSourceRequest, EditSourceResponse,
+    GetAnimeByIdRequest, GetAnimeByIdResponse, GetAnimeSeasonsRequest, GetAnimeSeasonsResponse,
+    GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse, GetSourceByIdRequest,
+    GetSourceByIdResponse, GetSourcesRequest, GetSourcesResponse, GetUserInfoRequest,
+    GetUserInfoResponse, RecoveryUserRequest, RecoveryUserResponse, SearchAnimeRequest,
+    SearchAnimeResponse,
 };
 use crate::extensions::Authentication;
 use crate::models::arguments::Cli;
@@ -20,6 +21,7 @@ use crate::models::config::Config;
 use crate::models::error::ApplicationError;
 use crate::repositories::DatabaseConnection;
 use crate::services::anime_service::AnimeService;
+use crate::services::episode_service::EpisodeService;
 use crate::services::season_service::SeasonService;
 use crate::services::source_service::SourceService;
 use crate::services::user_service::UserService;
@@ -31,6 +33,7 @@ pub struct ArkalisGrpcServerServices {
     database_connection: Arc<DatabaseConnection>,
     season_service: SeasonService,
     source_service: SourceService,
+    episode_service: EpisodeService,
 }
 
 impl ArkalisGrpcServerServices {
@@ -54,6 +57,9 @@ impl ArkalisGrpcServerServices {
                 database_connection: database_connection.clone(),
             },
             source_service: SourceService {
+                database_connection: database_connection.clone(),
+            },
+            episode_service: EpisodeService {
                 database_connection,
             },
         }
@@ -252,6 +258,18 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         let response = self
             .source_service
             .get_source_by_id(request.into_inner())
+            .await?;
+        Ok(Response::new(response))
+    }
+
+    async fn create_episode(
+        &self,
+        request: Request<CreateEpisodeRequest>,
+    ) -> Result<Response<CreateEpisodeResponse>, Status> {
+        let user = request.get_user(&self.config)?;
+        let response = self
+            .episode_service
+            .add_episode(request.into_inner(), &user)
             .await?;
         Ok(Response::new(response))
     }

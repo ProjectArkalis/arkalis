@@ -216,6 +216,20 @@ message GetSourceByIdResponse {
     Sources source = 1;
 }
 
+message CreateEpisodeRequest {
+    optional string cover_id = 1;
+    uint32 season_id = 2;
+    uint32 source_id = 3;
+    bool is_nsfw = 4;
+    uint32 sequence = 5;
+}
+
+message CreateEpisodeResponse {
+    string id = 1;
+    string name = 2;
+}
+
+
 service ArkalisCoreService {
     rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
     rpc CreateAdmin(CreateAdminRequest) returns (CreateAdminResponse);
@@ -234,4 +248,5 @@ service ArkalisCoreService {
     rpc GetSources(GetSourcesRequest) returns (GetSourcesResponse);
     rpc EditSource(EditSourceRequest) returns (EditSourceResponse);
     rpc GetSourceById(GetSourceByIdRequest) returns (GetSourceByIdResponse);
+    rpc CreateEpisode(CreateEpisodeRequest) returns (CreateEpisodeResponse);
 }
