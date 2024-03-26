@@ -1,0 +1,36 @@
+version: "3"
+services:
+  arkalis:
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      - ARKALIS_JWT_SECRET=${ARKALIS_JWT_SECRET}
+      - ARKALIS_ADMIN_MASTER_KEY=${ARKALIS_ADMIN_MASTER_KEY}
+      - ARKALIS_DATABASE_URL=mysql://root:${DATABASE_PASSWORD}@database/arkalis
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: mariadb:11.1.2
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MARIADB_DATABASE: arkalis
+    volumes:
+      - database:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "healthcheck.sh",
+          "--su-mysql",
+          "--connect",
+          "--innodb_initialized",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  database:
