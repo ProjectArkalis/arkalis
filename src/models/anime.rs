@@ -1,4 +1,5 @@
 use crate::arkalis_service;
+use arkalis_commons::enums::genres::Genre;
 use chrono::{DateTime, NaiveDate, Utc};
 use sqlx::mysql::MySqlRow;
 use sqlx::{Error, FromRow, Row};
@@ -7,7 +8,6 @@ use validator::{Validate, ValidationError};
 use crate::arkalis_service::{CreateAnimeRequest, EditAnimeRequest};
 use crate::models::anime_in_anime_list::AnimeInAnimeList;
 use crate::models::error::ApplicationError;
-use crate::models::genre::Genre;
 use crate::models::roles::Roles;
 use crate::models::title::Title;
 use crate::models::user::User;

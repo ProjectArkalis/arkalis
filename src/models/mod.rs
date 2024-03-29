@@ -5,7 +5,6 @@ pub mod arguments;
 pub mod config;
 pub mod episode;
 pub mod error;
-mod genre;
 pub mod roles;
 pub mod season;
 pub mod source;

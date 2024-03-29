@@ -22,12 +22,13 @@ sqlx = { version = "0.7.4", features = ["runtime-tokio", "tls-rustls", "mysql", 
 num-traits = "0.2.18"
 num-derive = "0.4.2"
 chrono = "0.4.35"
-bitflags = "2.4.2"
+bitflags = "2.5.0"
 serde_json = "1.0.114"
 clap = { version = "4.5.2", features = ["derive"] }
 pretty_env_logger = "0.5.0"
 sea-query = { version = "0.30.7", features = ["with-chrono"] }
 khash = "2.0.4"
+arkalis-commons = { git = "https://github.com/ProjectArkalis/ArkalisCommons" }
 
 [build-dependencies]
 tonic-build = "0.11.0"
