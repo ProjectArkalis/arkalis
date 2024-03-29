@@ -1,5 +1,4 @@
 use crate::arkalis_service;
-use arkalis_commons::enums::genres::Genre;
 use chrono::{DateTime, NaiveDate, Utc};
 use sqlx::mysql::MySqlRow;
 use sqlx::{Error, FromRow, Row};
@@ -11,6 +10,8 @@ use crate::models::error::ApplicationError;
 use crate::models::roles::Roles;
 use crate::models::title::Title;
 use crate::models::user::User;
+
+use super::genre::Genre;
 
 #[derive(Validate)]
 pub struct Anime {

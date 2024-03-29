@@ -119,7 +119,6 @@ name = "arkalis"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "arkalis-commons",
  "bitflags 2.5.0",
  "chrono",
  "clap",
@@ -142,14 +141,6 @@ dependencies = [
  "tonic-build",
  "uuid",
  "validator",
-]
-
-[[package]]
-name = "arkalis-commons"
-version = "0.1.0"
-source = "git+https://github.com/ProjectArkalis/ArkalisCommons#7d1461da877bc13b8a07b64ef2d4de2ae5ec6696"
-dependencies = [
- "bitflags 2.5.0",
 ]
 
 [[package]]

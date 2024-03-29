@@ -10,5 +10,6 @@ pub mod season;
 pub mod source;
 pub mod source_type;
 mod title;
+mod genre;
 mod title_type;
 pub mod user;
