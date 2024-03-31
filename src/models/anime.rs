@@ -7,10 +7,11 @@ use validator::{Validate, ValidationError};
 use crate::arkalis_service::{CreateAnimeRequest, EditAnimeRequest};
 use crate::models::anime_in_anime_list::AnimeInAnimeList;
 use crate::models::error::ApplicationError;
-use crate::models::genre::Genre;
 use crate::models::roles::Roles;
 use crate::models::title::Title;
 use crate::models::user::User;
+
+use super::genre::Genre;
 
 #[derive(Validate)]
 pub struct Anime {

@@ -1,7 +1,10 @@
+use models::arguments::Cli;
 use tonic::transport::Server;
+use clap::Parser;
 
 use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreServiceServer;
 use crate::grpc_calls::ArkalisGrpcServerServices;
+use crate::models::config::Config;
 
 mod extensions;
 mod grpc_calls;
@@ -17,8 +20,13 @@ pub mod arkalis_service {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     pretty_env_logger::init();
-    let addr = "127.0.0.1:8000".parse()?;
-    let service = ArkalisGrpcServerServices::new().await;
+    
+    let args = Cli::parse();
+    let config = Config::new(&args);
+    let addr = config.bind_url.clone().unwrap_or("127.0.0.1:8000".into());
+
+    let service = ArkalisGrpcServerServices::new(config).await;
+
     service
         .startup_routine()
         .await
@@ -26,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
 
     Server::builder()
         .add_service(ArkalisCoreServiceServer::new(service))
-        .serve(addr)
+        .serve(addr.parse()?)
         .await?;
 
     Ok(())

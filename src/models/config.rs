@@ -12,6 +12,7 @@ pub struct Config {
     pub jwt_secret: String,
     pub database_url: String,
     pub admin_master_key: String,
+    pub bind_url: Option<String>
 }
 
 impl Config {
