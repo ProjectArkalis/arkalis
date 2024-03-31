@@ -8,6 +8,7 @@ mod grpc_calls;
 mod models;
 mod repositories;
 mod services;
+mod view_models;
 
 pub mod arkalis_service {
     tonic::include_proto!("arkalis");

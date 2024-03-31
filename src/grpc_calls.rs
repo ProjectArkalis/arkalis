@@ -13,7 +13,7 @@ use crate::arkalis_service::{
     GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse, GetSourceByIdRequest,
     GetSourceByIdResponse, GetSourcesRequest, GetSourcesResponse, GetUserInfoRequest,
     GetUserInfoResponse, RecoveryUserRequest, RecoveryUserResponse, SearchAnimeRequest,
-    SearchAnimeResponse,
+    SearchAnimeResponse, UpdateEpisodeRequest, UpdateEpisodeResponse,
 };
 use crate::extensions::Authentication;
 use crate::models::arguments::Cli;
@@ -270,6 +270,18 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         let response = self
             .episode_service
             .add_episode(request.into_inner(), &user)
+            .await?;
+        Ok(Response::new(response))
+    }
+
+    async fn update_episode(
+        &self,
+        _request: Request<UpdateEpisodeRequest>,
+    ) -> Result<Response<UpdateEpisodeResponse>, Status> {
+        let user = _request.get_user(&self.config)?;
+        let response = self
+            .episode_service
+            .update_episode(_request.into_inner(), &user)
             .await?;
         Ok(Response::new(response))
     }

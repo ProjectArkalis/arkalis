@@ -229,6 +229,14 @@ message CreateEpisodeResponse {
     string name = 2;
 }
 
+message UpdateEpisodeRequest {
+    string id = 1;
+    optional string cover_Id = 2;
+    optional string lbry_url = 3;
+    uint32 sequence = 5;
+}
+
+message UpdateEpisodeResponse {}
 
 service ArkalisCoreService {
     rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse);
@@ -249,4 +257,5 @@ service ArkalisCoreService {
     rpc EditSource(EditSourceRequest) returns (EditSourceResponse);
     rpc GetSourceById(GetSourceByIdRequest) returns (GetSourceByIdResponse);
     rpc CreateEpisode(CreateEpisodeRequest) returns (CreateEpisodeResponse);
+    rpc UpdateEpisode (UpdateEpisodeRequest) returns (UpdateEpisodeResponse);
 }

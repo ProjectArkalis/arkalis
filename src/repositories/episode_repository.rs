@@ -20,3 +20,33 @@ pub async fn episode_add(
 
     Ok(())
 }
+
+pub async fn episode_get_by_id(
+    conn: &DatabaseConnection,
+    id: &str,
+) -> Result<Episode, ApplicationError> {
+    let result = sqlx::query_as("select * from episodes where id = ?")
+        .bind(id)
+        .fetch_one(&conn.connection)
+        .await
+        .map_err(|e| ApplicationError::UnknownError(e.into()))?;
+
+    Ok(result)
+}
+
+pub async fn episode_update(
+    conn: &DatabaseConnection,
+    episode: Episode,
+) -> Result<(), ApplicationError> {
+    sqlx::query("update episodes set cover_id = ?, lbry_media_id = ?, file_name = ?, sequence = ? where id = ?")
+        .bind(episode.cover_id)
+        .bind(episode.lbry_media_id)
+        .bind(episode.file_name)
+        .bind(episode.sequence)
+        .bind(episode.id)
+        .execute(&conn.connection)
+        .await
+        .map_err(|e| ApplicationError::UnknownError(e.into()))?;
+
+    Ok(())
+}

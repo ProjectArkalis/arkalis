@@ -1,4 +1,6 @@
-use crate::arkalis_service::{CreateEpisodeRequest, CreateEpisodeResponse};
+use crate::arkalis_service::{
+    CreateEpisodeRequest, CreateEpisodeResponse, UpdateEpisodeRequest, UpdateEpisodeResponse,
+};
 use crate::models::episode::Episode;
 use crate::models::error::ApplicationError;
 use crate::models::user::User;
@@ -25,5 +27,18 @@ impl EpisodeService {
         episode_repository::episode_add(&self.database_connection, episode).await?;
 
         Ok(CreateEpisodeResponse { id, name })
+    }
+
+    pub async fn update_episode(
+        &self,
+        data: UpdateEpisodeRequest,
+        user: &User,
+    ) -> Result<UpdateEpisodeResponse, ApplicationError> {
+        let episode =
+            episode_repository::episode_get_by_id(&self.database_connection, &data.id).await?;
+        let episode = episode.update_episode(data, user).await?;
+        episode_repository::episode_update(&self.database_connection, episode).await?;
+
+        Ok(UpdateEpisodeResponse {})
     }
 }
