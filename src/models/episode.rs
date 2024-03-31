@@ -6,7 +6,7 @@ use validator::Validate;
 use crate::arkalis_service::{CreateEpisodeRequest, UpdateEpisodeRequest};
 use crate::models::error::ApplicationError;
 use crate::models::user::User;
-use crate::view_models;
+use crate::{arkalis_service, view_models};
 
 #[derive(Validate, FromRow)]
 pub struct Episode {
@@ -85,6 +85,31 @@ impl Episode {
         self.sequence = new_data.sequence as u16;
 
         Ok(self)
+    }
+    
+    pub fn parse_to_grpc_model(self) -> Result<arkalis_service::Episode, ApplicationError> {
+        let ep = arkalis_service::Episode {
+            id: self.id,
+            name: self.name,
+            cover_id: self.cover_id,
+            season_id: self.season_id,
+            source_id: self.source_id,
+            lbry_media_id: self.lbry_media_id.ok_or(ApplicationError::UnknownError(anyhow!("lbry_media_id is null")))?,
+            file_name: self.file_name.ok_or(ApplicationError::UnknownError(anyhow!("file_name is null")))?,
+            is_nsfw: self.is_nsfw,
+            sequence: self.sequence as u32,
+        };
+
+        Ok(ep)
+    }
+    
+    pub fn parse_to_grpc_vec_model(episodes: Vec<Episode>) -> Result<Vec<arkalis_service::Episode>, ApplicationError> {
+        let mut res_eps = Vec::with_capacity(episodes.len());
+        for ep in episodes {
+            res_eps.push(ep.parse_to_grpc_model()?);
+        }
+        
+        Ok(res_eps)
     }
 
     fn get_lbry_media_id(url: &str) -> Result<String, ApplicationError> {

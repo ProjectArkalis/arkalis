@@ -1,6 +1,4 @@
-use crate::arkalis_service::{
-    CreateEpisodeRequest, CreateEpisodeResponse, UpdateEpisodeRequest, UpdateEpisodeResponse,
-};
+use crate::arkalis_service::{CreateEpisodeRequest, CreateEpisodeResponse, GetEpisodesBySeasonAndSourceRequest, GetEpisodesBySeasonAndSourceResponse, UpdateEpisodeRequest, UpdateEpisodeResponse};
 use crate::models::episode::Episode;
 use crate::models::error::ApplicationError;
 use crate::models::user::User;
@@ -40,5 +38,13 @@ impl EpisodeService {
         episode_repository::episode_update(&self.database_connection, episode).await?;
 
         Ok(UpdateEpisodeResponse {})
+    }
+    
+    pub async fn get_episodes_by_season_and_source(&self, filter: GetEpisodesBySeasonAndSourceRequest) -> Result<GetEpisodesBySeasonAndSourceResponse, ApplicationError> {
+        let episodes = episode_repository::episode_get_by_season_and_source(&self.database_connection, filter.season_id, filter.source_id).await?;
+        let episodes_grpc = Episode::parse_to_grpc_vec_model(episodes)?;
+        Ok(GetEpisodesBySeasonAndSourceResponse {
+            episodes: episodes_grpc
+        })
     }
 }

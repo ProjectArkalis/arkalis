@@ -50,3 +50,14 @@ pub async fn episode_update(
 
     Ok(())
 }
+
+pub async fn episode_get_by_season_and_source(conn: &DatabaseConnection, season_id: u32, source_id: u32) -> Result<Vec<Episode>, ApplicationError> {
+    let result = sqlx::query_as("select * from episodes where season_id = ? and source_id = ? and lbry_media_id is not null and file_name is not null order by sequence")
+        .bind(season_id)
+        .bind(source_id)
+        .fetch_all(&conn.connection)
+        .await
+        .map_err(|e| ApplicationError::UnknownError(e.into()))?;
+
+    Ok(result)
+}
