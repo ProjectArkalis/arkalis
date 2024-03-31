@@ -2,8 +2,20 @@ use std::sync::Arc;
 
 use tonic::{Request, Response, Status};
 
-use crate::arkalis_service::{AddSeasonRequest, AddSeasonResponse, CreateAdminRequest, CreateAdminResponse, CreateAnimeRequest, CreateAnimeResponse, CreateEpisodeRequest, CreateEpisodeResponse, CreateRecoveryKeyRequest, CreateRecoveryKeyResponse, CreateSourceRequest, CreateSourceResponse, CreateTokenRequest, CreateTokenResponse, EditAnimeRequest, EditAnimeResponse, EditSeasonRequest, EditSeasonResponse, EditSourceRequest, EditSourceResponse, GetAnimeByIdRequest, GetAnimeByIdResponse, GetAnimeSeasonsRequest, GetAnimeSeasonsResponse, GetEpisodesBySeasonAndSourceRequest, GetEpisodesBySeasonAndSourceResponse, GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse, GetSourceByIdRequest, GetSourceByIdResponse, GetSourcesRequest, GetSourcesResponse, GetUserInfoRequest, GetUserInfoResponse, RecoveryUserRequest, RecoveryUserResponse, SearchAnimeRequest, SearchAnimeResponse, UpdateEpisodeRequest, UpdateEpisodeResponse};
 use crate::arkalis_service::arkalis_core_service_server::ArkalisCoreService;
+use crate::arkalis_service::{
+    AddSeasonRequest, AddSeasonResponse, CreateAdminRequest, CreateAdminResponse,
+    CreateAnimeRequest, CreateAnimeResponse, CreateEpisodeRequest, CreateEpisodeResponse,
+    CreateRecoveryKeyRequest, CreateRecoveryKeyResponse, CreateSourceRequest, CreateSourceResponse,
+    CreateTokenRequest, CreateTokenResponse, EditAnimeRequest, EditAnimeResponse,
+    EditSeasonRequest, EditSeasonResponse, EditSourceRequest, EditSourceResponse,
+    GetAnimeByIdRequest, GetAnimeByIdResponse, GetAnimeSeasonsRequest, GetAnimeSeasonsResponse,
+    GetEpisodesBySeasonAndSourceRequest, GetEpisodesBySeasonAndSourceResponse,
+    GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse, GetSourceByIdRequest,
+    GetSourceByIdResponse, GetSourcesRequest, GetSourcesResponse, GetUserInfoRequest,
+    GetUserInfoResponse, RecoveryUserRequest, RecoveryUserResponse, SearchAnimeRequest,
+    SearchAnimeResponse, UpdateEpisodeRequest, UpdateEpisodeResponse,
+};
 use crate::extensions::Authentication;
 use crate::models::config::Config;
 use crate::models::error::ApplicationError;
@@ -273,8 +285,14 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         Ok(Response::new(response))
     }
 
-    async fn get_episodes_by_season_and_source(&self, request: Request<GetEpisodesBySeasonAndSourceRequest>) -> Result<Response<GetEpisodesBySeasonAndSourceResponse>, Status> {
-        let response = self.episode_service.get_episodes_by_season_and_source(request.into_inner()).await?;
+    async fn get_episodes_by_season_and_source(
+        &self,
+        request: Request<GetEpisodesBySeasonAndSourceRequest>,
+    ) -> Result<Response<GetEpisodesBySeasonAndSourceResponse>, Status> {
+        let response = self
+            .episode_service
+            .get_episodes_by_season_and_source(request.into_inner())
+            .await?;
         Ok(Response::new(response))
     }
 }
