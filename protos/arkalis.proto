@@ -257,5 +257,5 @@ service ArkalisCoreService {
     rpc EditSource(EditSourceRequest) returns (EditSourceResponse);
     rpc GetSourceById(GetSourceByIdRequest) returns (GetSourceByIdResponse);
     rpc CreateEpisode(CreateEpisodeRequest) returns (CreateEpisodeResponse);
-    rpc UpdateEpisode (UpdateEpisodeRequest) returns (UpdateEpisodeResponse);
+    rpc UpdateEpisode(UpdateEpisodeRequest) returns (UpdateEpisodeResponse);
 }
