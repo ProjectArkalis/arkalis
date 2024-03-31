@@ -22,7 +22,7 @@ pub struct Episode {
     pub file_name: Option<String>,
     pub is_nsfw: bool,
     pub sequence: u16,
-    pub is_hidden: bool
+    pub is_hidden: bool,
 }
 
 impl Episode {
@@ -47,7 +47,7 @@ impl Episode {
             file_name: None,
             is_nsfw: episode_request.is_nsfw,
             sequence: episode_request.sequence as u16,
-            is_hidden: episode_request.is_hidden
+            is_hidden: episode_request.is_hidden,
         };
 
         Ok(episode)
