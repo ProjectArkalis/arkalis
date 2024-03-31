@@ -222,6 +222,7 @@ message CreateEpisodeRequest {
     uint32 source_id = 3;
     bool is_nsfw = 4;
     uint32 sequence = 5;
+    bool is_hidden = 6;
 }
 
 message CreateEpisodeResponse {
@@ -234,6 +235,7 @@ message UpdateEpisodeRequest {
     optional string cover_Id = 2;
     optional string lbry_url = 3;
     uint32 sequence = 5;
+    bool is_hidden = 6;
 }
 
 message UpdateEpisodeResponse {}
