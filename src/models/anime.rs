@@ -107,6 +107,7 @@ impl Anime {
         }
 
         self.titles = Title::from_grpc_arr(update_data.titles)?;
+        self.title_search = generate_title_search(&self.titles);
         self.synopsis = update_data.synopsis;
         self.thumbnail_id = update_data.thumbnail_id;
         self.banner_id = update_data.banner_id;
@@ -119,6 +120,7 @@ impl Anime {
             )),
         )?;
         self.anime_in_lists = AnimeInAnimeList::from_grpc_arr(update_data.anime_in_lists)?;
+        self.is_hidden = update_data.is_hidden;
 
         Ok(self)
     }

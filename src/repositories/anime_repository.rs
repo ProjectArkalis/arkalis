@@ -202,14 +202,16 @@ pub async fn anime_update(conn: &DatabaseConnection, anime: Anime) -> Result<(),
     let titles = anime.get_titles_json()?;
     let anime_in_list = anime.get_anime_in_anime_list_json()?;
 
-    sqlx::query("update animes set titles = ?, synopsis = ?, thumbnail_id = ?, banner_id = ?, genre = ?, release_date = ?, anime_in_lists = ? where id = ?")
+    sqlx::query("update animes set titles = ?, title_search = ?, synopsis = ?, thumbnail_id = ?, banner_id = ?, genre = ?, release_date = ?, anime_in_lists = ?, is_hidden = ? where id = ?")
         .bind(titles)
+        .bind(anime.title_search)
         .bind(anime.synopsis)
         .bind(anime.thumbnail_id)
         .bind(anime.banner_id)
         .bind(anime.genre.bits())
         .bind(anime.release_date)
         .bind(anime_in_list)
+        .bind(anime.is_hidden)
         .bind(anime.id)
         .execute(&conn.connection)
         .await

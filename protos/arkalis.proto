@@ -112,6 +112,7 @@ message EditAnimeRequest {
     uint64 genre = 6;
     int64 release_date = 7;
     repeated AnimeInAnimeList anime_in_lists = 8;
+    bool is_hidden = 9;
 }
 
 message EditAnimeResponse {}
