@@ -47,7 +47,11 @@ pub async fn source_get(
     conn: &DatabaseConnection,
     filters: GetSourcesRequest,
 ) -> Result<Vec<Source>, ApplicationError> {
-    let GetSourcesRequest { source_type } = filters;
+    let GetSourcesRequest {
+        source_type,
+        name,
+        priority,
+    } = filters;
 
     let query = Query::select()
         .columns([
@@ -58,9 +62,23 @@ pub async fn source_get(
         ])
         .from(SourceQueryTable::Table)
         .conditions(
-            filters.source_type.is_some(),
+            source_type.is_some(),
             move |q| {
                 q.and_where(Expr::col(SourceQueryTable::SourceType).eq(source_type.unwrap()));
+            },
+            |_| {},
+        )
+        .conditions(
+            name.is_some(),
+            |q| {
+                q.and_where(Expr::col(SourceQueryTable::Name).like(format!("%{}%", name.unwrap())));
+            },
+            |_| {},
+        )
+        .conditions(
+            priority.is_some(),
+            |q| {
+                q.and_where(Expr::col(SourceQueryTable::Priority).eq(priority.unwrap() as u8));
             },
             |_| {},
         )

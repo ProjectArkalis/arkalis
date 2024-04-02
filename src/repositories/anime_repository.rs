@@ -1,7 +1,6 @@
 use crate::arkalis_service::SearchAnimeRequest;
 use crate::models::anime::Anime;
 use crate::models::error::ApplicationError;
-use crate::repositories::anime_repository::AnimeQueryTable::IsHidden;
 use crate::repositories::DatabaseConnection;
 use chrono::DateTime;
 use sea_query::{Expr, Iden, MysqlQueryBuilder, Query, SimpleExpr};
@@ -86,7 +85,7 @@ pub async fn anime_get_by_id(
         .conditions(
             !show_all,
             |q| {
-                q.and_where(Expr::col(IsHidden).eq(false));
+                q.and_where(Expr::col(AnimeQueryTable::IsHidden).eq(false));
             },
             |_| {},
         )

@@ -193,6 +193,8 @@ message Sources {
 
 message GetSourcesRequest {
     optional uint64 source_type = 1;
+    optional string name = 2;
+    optional uint32 priority = 3;
 }
 
 message GetSourcesResponse {
