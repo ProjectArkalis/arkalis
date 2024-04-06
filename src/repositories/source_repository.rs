@@ -118,3 +118,18 @@ pub async fn source_by_id(conn: &DatabaseConnection, id: u32) -> Result<Source, 
 
     Ok(result)
 }
+
+pub async fn sources_by_season_id(
+    conn: &DatabaseConnection,
+    season_id: u32,
+) -> Result<Vec<Source>, ApplicationError> {
+    let result = sqlx::query_as(
+        "select s.* from episodes e join sources s on e.source_id = s.id where e.season_id = ?",
+    )
+    .bind(season_id)
+    .fetch_all(&conn.connection)
+    .await
+    .map_err(|e| ApplicationError::UnknownError(e.into()))?;
+
+    Ok(result)
+}

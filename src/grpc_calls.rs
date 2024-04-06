@@ -12,9 +12,10 @@ use crate::arkalis_service::{
     GetAnimeByIdRequest, GetAnimeByIdResponse, GetAnimeSeasonsRequest, GetAnimeSeasonsResponse,
     GetEpisodesBySeasonAndSourceRequest, GetEpisodesBySeasonAndSourceResponse,
     GetLastSeasonSequenceRequest, GetLastSeasonSequenceResponse, GetSourceByIdRequest,
-    GetSourceByIdResponse, GetSourcesRequest, GetSourcesResponse, GetUserInfoRequest,
-    GetUserInfoResponse, RecoveryUserRequest, RecoveryUserResponse, SearchAnimeRequest,
-    SearchAnimeResponse, UpdateEpisodeRequest, UpdateEpisodeResponse,
+    GetSourceByIdResponse, GetSourcesBySeasonIdRequest, GetSourcesBySeasonIdResponse,
+    GetSourcesRequest, GetSourcesResponse, GetUserInfoRequest, GetUserInfoResponse,
+    RecoveryUserRequest, RecoveryUserResponse, SearchAnimeRequest, SearchAnimeResponse,
+    UpdateEpisodeRequest, UpdateEpisodeResponse,
 };
 use crate::extensions::Authentication;
 use crate::models::config::Config;
@@ -292,6 +293,17 @@ impl ArkalisCoreService for ArkalisGrpcServerServices {
         let response = self
             .episode_service
             .get_episodes_by_season_and_source(request.into_inner())
+            .await?;
+        Ok(Response::new(response))
+    }
+
+    async fn get_sources_by_season_id(
+        &self,
+        request: Request<GetSourcesBySeasonIdRequest>,
+    ) -> Result<Response<GetSourcesBySeasonIdResponse>, Status> {
+        let response = self
+            .source_service
+            .get_source_by_season_id(request.into_inner())
             .await?;
         Ok(Response::new(response))
     }

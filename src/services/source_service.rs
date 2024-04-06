@@ -1,6 +1,7 @@
 use crate::arkalis_service::{
     CreateSourceRequest, CreateSourceResponse, EditSourceRequest, EditSourceResponse,
-    GetSourceByIdRequest, GetSourceByIdResponse, GetSourcesRequest, GetSourcesResponse, Sources,
+    GetSourceByIdRequest, GetSourceByIdResponse, GetSourcesBySeasonIdRequest,
+    GetSourcesBySeasonIdResponse, GetSourcesRequest, GetSourcesResponse, Sources,
 };
 use crate::models::error::ApplicationError;
 use crate::models::source::Source;
@@ -54,6 +55,19 @@ impl SourceService {
         let source = source_repository::source_by_id(&self.database_connection, id.id).await?;
         Ok(GetSourceByIdResponse {
             source: Some(source.into()),
+        })
+    }
+
+    pub async fn get_source_by_season_id(
+        &self,
+        filter: GetSourcesBySeasonIdRequest,
+    ) -> Result<GetSourcesBySeasonIdResponse, ApplicationError> {
+        let sources =
+            source_repository::sources_by_season_id(&self.database_connection, filter.season_id)
+                .await?;
+
+        Ok(GetSourcesBySeasonIdResponse {
+            sources: sources.into_iter().map(Sources::from).collect(),
         })
     }
 }
