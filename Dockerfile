@@ -17,6 +17,10 @@ RUN cargo install --path .
 
 
 FROM debian:bookworm-slim
+
+RUN apt-get update \
+    && apt-get install openssl -y
+
 COPY --from=builder /usr/local/cargo/bin/arkalis /usr/local/bin/arkalis
 EXPOSE 8000
 ENTRYPOINT ["arkalis"]
