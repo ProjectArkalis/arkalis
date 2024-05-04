@@ -1,13 +1,16 @@
+use std::sync::Arc;
+
+use validator::Validate;
+
 use crate::arkalis_service::{
-    CreateEpisodeRequest, CreateEpisodeResponse, GetEpisodesBySeasonAndSourceRequest,
-    GetEpisodesBySeasonAndSourceResponse, UpdateEpisodeRequest, UpdateEpisodeResponse,
+    CreateEpisodeRequest, CreateEpisodeResponse, GetEpisodeByIdRequest, GetEpisodeByIdResponse,
+    GetEpisodesBySeasonAndSourceRequest, GetEpisodesBySeasonAndSourceResponse,
+    UpdateEpisodeRequest, UpdateEpisodeResponse,
 };
 use crate::models::episode::Episode;
 use crate::models::error::ApplicationError;
 use crate::models::user::User;
 use crate::repositories::{episode_repository, DatabaseConnection};
-use std::sync::Arc;
-use validator::Validate;
 
 pub struct EpisodeService {
     pub database_connection: Arc<DatabaseConnection>,
@@ -56,6 +59,18 @@ impl EpisodeService {
         let episodes_grpc = Episode::parse_to_grpc_vec_model(episodes)?;
         Ok(GetEpisodesBySeasonAndSourceResponse {
             episodes: episodes_grpc,
+        })
+    }
+
+    pub async fn get_episode_bu_id(
+        &self,
+        filter: GetEpisodeByIdRequest,
+    ) -> Result<GetEpisodeByIdResponse, ApplicationError> {
+        let episode =
+            episode_repository::episode_get_by_id(&self.database_connection, &filter.id).await?;
+        let episode_grpc = Episode::parse_to_grpc_model(episode)?;
+        Ok(GetEpisodeByIdResponse {
+            episode: Some(episode_grpc),
         })
     }
 }

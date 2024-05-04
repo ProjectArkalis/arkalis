@@ -6,7 +6,7 @@ use tonic::Request;
 pub trait Authentication {
     fn get_auth_token(&self) -> Option<String>;
     fn get_user(&self, config: &Config) -> Result<User, ApplicationError>;
-    fn is_authenticated(&self, config: &Config) -> bool;
+    // fn is_authenticated(&self, config: &Config) -> bool;
 }
 
 impl<T> Authentication for Request<T> {
@@ -31,10 +31,10 @@ impl<T> Authentication for Request<T> {
         Ok(user)
     }
 
-    fn is_authenticated(&self, config: &Config) -> bool {
-        let user = self.get_user(config);
-        user.is_ok()
-    }
+    // fn is_authenticated(&self, config: &Config) -> bool {
+    //     let user = self.get_user(config);
+    //     user.is_ok()
+    // }
 }
 
 pub trait OptionToAppResult<T> {
