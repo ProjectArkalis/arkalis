@@ -124,7 +124,7 @@ pub async fn sources_by_season_id(
     season_id: u32,
 ) -> Result<Vec<Source>, ApplicationError> {
     let result = sqlx::query_as(
-        "select s.* from episodes e join sources s on e.source_id = s.id where e.season_id = ?",
+        "select s.* from episodes e join sources s on e.source_id = s.id where e.season_id = ? group by s.id, s.name, s.source_type, s.priority",
     )
     .bind(season_id)
     .fetch_all(&conn.connection)
